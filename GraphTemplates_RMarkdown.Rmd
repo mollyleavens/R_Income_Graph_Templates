@@ -12,6 +12,8 @@ output:
 
 # Setup
 
+TESTING
+
 This document includes templates to recreate each of the graph types demonstrated in the "Guidance manual on calculating and visualizing income gap to a Living Income Benchmark" prepared for the Living Income Community of Practice.
 
 The example graphs for each graph type come from an example data set. Each code template has capital letters signifying the places in the code you will need to edit with the variable names specific to your data set.  
