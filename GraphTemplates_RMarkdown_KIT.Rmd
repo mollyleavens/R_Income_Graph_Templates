@@ -1,6 +1,6 @@
 ---
 title: "R Graph Templates for Visualizing Living Income"
-author: "Molly Leavens"
+author: "Molly Leavens on behalf of the Sustainable Food Lab"
 date: "4/7/2021"
 output:  
   pdf_document:
@@ -8,14 +8,26 @@ output:
   html_document:
     toc: yes
 ---
+
+```{r, echo=FALSE, fig.align='center'}
+include_graphics("food-lab-logo-85px.png")
+```
+
 \newpage
+
+# Instructions for use
+
+* The Sustainable Food Lab created this document to support companies and research organizations who are visualizing income data and its relationship to established Living Income Benchmarks. This document supplements tools developed by KIT to generate these graphics in [Stata and Excel] (https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn).     
+
+* The advantages of data cleaning, management, and visualization in R programming language are countless and include: free open source use, reproducibility and documentation of data cleaning, seamless integration with GitHub (a software/platform to track, store, and collaborate on code scripts), and flexible functions. 
+
+* While the code presented in this document is intended to be as user friendly as possible, some basic knowledge of R is necessary. The user will need to understand how to navigate the basic R interface to run the script and export desired graphics.   
 
 # Setup
 
+* The example graphs below visualize a publicly-available data set based on previous work of KIT for the Living Income Community of Practice.
 
-This document includes templates to recreate each of the graph types demonstrated in the "Guidance manual on calculating and visualizing income gap to a Living Income Benchmark" prepared for the Living Income Community of Practice.
-
-The example graphs for each graph type come from an example data set. Each code template has capital letters signifying the places in the code you will need to edit with the variable names specific to your data set.  
+* To run your own data through the code provided below, it is imperative that you format your data in exactly the same structure as the sample data set. See the KIT Excel format [HERE] (https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn) to copy the exact column names for each key variable. Ensure that you format all numerical variables without any commas or currency notations.  
 
 ```{r,echo=FALSE}
 knitr::opts_chunk$set(message = FALSE)
@@ -34,7 +46,8 @@ library(scales)
 ## Import data set
 # If you have troubles with the import, 
 # ensure the original data file is stored in your working directory 
-# DATA <- read_csv("NAME OF DATA FILE.CSV")
+# If your origional data file is saved as an Excel, you 
+DATA <- read_csv("NAME OF DATA FILE.CSV")
 ```
 
 ```{r, include=FALSE, echo=FALSE}
