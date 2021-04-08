@@ -21,13 +21,15 @@ include_graphics("food-lab-logo-85px.png")
 
 * The advantages of data cleaning, management, and visualization in R programming language are countless and include: free open source use, reproducibility and documentation of data cleaning, seamless integration with GitHub (a software/platform to track, store, and collaborate on code scripts), and flexible functions. 
 
-* While the code presented in this document is intended to be as user friendly as possible, some basic knowledge of R is necessary. The user will need to understand how to navigate the basic R interface to run the script and export desired graphics.   
+* While the code presented in this document is intended to be as user friendly as possible, some basic knowledge of R is necessary. The user will need to understand how to navigate the basic R interface to run the script and export desired graphics. 
 
 # Setup
 
 * The example graphs below visualize a publicly-available data set based on previous work of KIT for the Living Income Community of Practice.
 
-* To run your own data through the code provided below, it is imperative that you format your data in exactly the same structure as the sample data set. See the KIT Excel format [HERE] (https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn) to copy the exact column names for each key variable. Ensure that you format all numerical variables without any commas or currency notations.  
+* The sample data set assigns different Living Income benchmarks to different household types. No changes to the code are necessary if your data only has one benchmark for all household types or genders.  
+
+* To run your own data through the code provided below, it is imperative that you format your data in exactly the same structure as the sample data set. See the KIT Excel format [HERE] (https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn) to copy the exact column names for each key variable. If you alter any column names in your data file, you will need to update this code accordingly. Ensure that you format all numerical variables without any commas or currency notations.  
 
 ```{r,echo=FALSE}
 knitr::opts_chunk$set(message = FALSE)
@@ -37,6 +39,7 @@ knitr::opts_chunk$set(message = FALSE)
 
 ```{r, echo=TRUE}
 ## Fist, load the R libraries that have the necessary functions for this analysis. 
+
 # If you have not previously used these libraries, 
 # you will need to instaLl them with the function install.packages("LIBRARY NAME")
 library(tidyverse)
@@ -44,10 +47,16 @@ library(knitr)
 library(scales)
 
 ## Import data set
+
 # If you have troubles with the import, 
-# ensure the original data file is stored in your working directory 
-# If your origional data file is saved as an Excel, you 
-DATA <- read_csv("NAME OF DATA FILE.CSV")
+# ensure the original data file is stored in your "working directory"
+# (most often the same folder you have saved your working code script)
+
+# If your original data file is saved as an Excel, export it as a CSV file.
+# Ensure the top row is only column names.
+# Replace 'KIT_Sample_Data' with the name of your data file.
+
+DATA <- read_csv("KIT_Sample_Data.csv")
 ```
 
 ```{r, include=FALSE, echo=FALSE}
@@ -63,72 +72,38 @@ all$Gender[all$Gender == "M"] <- "Male-headed"
 
 # The gap of the mean income to the Living Income Benchmark - bar chart
 
-In the KIT document, this graph shows different heights for each bar as the living income benchmark had been adjusted for the different household types. For the sample data set visualized in this document, we applied a single benchmark across household types.  
-
-## Sample Graph
-
-```{r, echo=FALSE, include=TRUE}
-all %>% 
-  filter(!is.na(Gender)) %>% 
-  group_by(Gender) %>% 
-  summarise(Gap = mean(gap),
-            Noncoffee = mean(noncoffee_income_U + Food_Income_U),
-            Coffee = mean(coffee_income_net_U)) %>% 
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
-  mutate(Component = factor(Component, levels = c("Gap", "Noncoffee", "Coffee"))) %>% 
-  ggplot(aes(y = Income, x = Gender, fill = Component)) +
-  geom_bar(position = "stack", stat = "identity") +
-  labs(title = "Mean values", 
-       y = "USD/year/household",
-       x = "",
-       caption = "Female-headed: n = 1516 \n Male-headed: n = 3487") +
-  scale_fill_discrete(breaks=c("Gap",
-                                "Noncoffee",
-                                "Coffee"),
-                      labels=c("Gap to the Living Income Benchmark",
-                                "Other income",
-                                "Income from main crop")) +
-  scale_y_continuous(labels = comma) +
-  theme(panel.grid.major.x = element_blank(), 
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank(),
-        plot.title = element_text(hjust = 0.5),
-        legend.position="bottom",
-        legend.title = element_blank(),
-        plot.caption = element_text(hjust = 0)) +
-  geom_text(aes(label = round(Income)), position = position_stack(vjust = 0.5), size = 3) 
-```
-
-## Sample Code
-```{r, echo=TRUE, eval=FALSE}
+```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
 DATA %>% 
-# Group by gender
-  group_by(GENDER COLUMN) %>% 
-# For each gender, summarize the mean gap to the living income, 
-# the mean noncoffee income, and the mean coffee income 
-  summarise(Gap = mean(LI BENCHMARK - NET TOTAL INCOME COLUMN),
-            Noncoffee = mean(NET NONCOFFEE COLUMN + AT HOME FOOD INCOME COLUMN),
-            Coffee = mean(NET COFFEE INCOME COLUMN)) %>% 
+# Group by household type
+  group_by(grouping) %>% 
+# For each household type, summarize the mean gap to the living income, 
+# the mean noncocoa income, and the mean cocoa income 
+  summarise(Gap = mean(benchmark - total_hh_income_2018),
+            Noncocoa = mean(total_hh_income_2018 - total_cocoa_income_2018),
+            cocoa = mean(total_cocoa_income_2018)) %>% 
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
+  gather(key = "Component", value = "Income", Gap:cocoa) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
-                            levels = c("Gap", "Noncoffee", "Coffee"))) %>% 
+                            levels = c("Gap", "Noncocoa", "cocoa"))) %>% 
 # Generate ggplot graph for income by gender and income component  
-  ggplot(aes(y = Income, x = GENDER COLUMN, fill = Component)) +
+  ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Mean values", 
        y = "USD/year/household",
        x = "",
-# Update X's in this character string to the number of observations for each household type       
-       caption = "Female-headed: n = XXX \n Male-headed: n = XXX") +
+# Manually update the numbers in this character string to the number of observations for each household type       
+       caption = "Based on:
+       Male-headed, typical: 595 observations
+       Male-headed, large: 187 observations
+       Female-headed: 144 observations") +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
-                                "Noncoffee",
-                                "Coffee"),
+                                "Noncocoa",
+                                "cocoa"),
                       labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
                                 "Income from main crop")) +
@@ -156,74 +131,39 @@ DATA %>%
 
 # The gap of the relative mean income to the Living Income Benchmark - bar chart
 
-## Sample Graph
-```{r, echo=FALSE, include=TRUE}
-all %>% 
-  filter(!is.na(Gender)) %>% 
-  group_by(Gender) %>% 
-  summarise(Gap = mean(gap)/
-              mean(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U),
-            Noncoffee = mean(noncoffee_income_U + Food_Income_U)/
-              mean(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U),
-            Coffee = mean(coffee_income_net_U)/
-              mean(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U)) %>% 
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
-  mutate(Component = factor(Component, levels = c("Gap", "Noncoffee", "Coffee"))) %>% 
-  ggplot(aes(x = Gender, y = Income, fill = Component)) +
-  geom_col(position = "fill") +
-  labs(title = "Mean values in relation to the benchmark value", 
-       y = "% of the benchmark value",
-       x = "",
-       caption = "Female-headed: n = 1516 \n Male-headed: n = 3487") +
-  scale_fill_discrete(breaks=c("Gap",
-                                "Noncoffee",
-                                "Coffee"),
-                      labels=c("Gap to the Living Income Benchmark",
-                                "Other income",
-                                "Income from main crop")) +
-  scale_y_continuous(labels = percent) +
-  theme(panel.grid.major.x = element_blank(), 
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank(),
-        plot.title = element_text(hjust = 0.5),
-        legend.position="bottom",
-        legend.title = element_blank(),
-        plot.caption = element_text(hjust = 0)) +
-      geom_text(aes(label = label_percent(accuracy = 1L)(Income)), position = position_stack(vjust = 0.5), size = 3)
-```
-
-## Sample Code
-
-```{r, echo=TRUE, eval=FALSE}
+```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
 DATA %>% 
-# Group by gender
-  group_by(GENDER COLUMN) %>% 
-# For each gender, summarize the mean gap to the living income, 
-# the mean noncoffee income, and the mean coffee income. 
+# Group by household type
+  group_by(grouping) %>% 
+# For each household type, summarize the mean gap to the living income, 
+# the mean non-cocoa income, and the mean cocoa income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
-  summarise(Gap = mean(LI BENCHMARK - NET TOTAL INCOME COLUMN)/LI BENCHMARK,
-            Noncoffee = mean(NET NONCOFFEE COLUMN + AT HOME FOOD INCOME COLUMN)/LI BENCHMARK,
-            Coffee = mean(NET COFFEE INCOME COLUMN)/LI BENCHMARK %>% 
+  summarise(Gap = mean((benchmark - total_hh_income_2018)/benchmark),
+            Noncocoa = mean((total_hh_income_2018 - total_cocoa_income_2018)/benchmark),
+            cocoa = mean(total_cocoa_income_2018/benchmark)) %>% 
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
+  gather(key = "Component", value = "Income", Gap:cocoa) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
-                            levels = c("Gap", "Noncoffee", "Coffee"))) %>% 
+                            levels = c("Gap", "Noncocoa", "cocoa"))) %>% 
 # Generate ggplot graph for income by gender and income component  
-  ggplot(aes(y = Income, x = GENDER COLUMN, fill = Component)) +
+  ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Mean values", 
        y = "% of the benchmark value",
        x = "",
-# Update X's in this character string to the number of observations for each household type       
-       caption = "Female-headed: n = XXX \n Male-headed: n = XXX") +
+# Manually update the numbers in this character string to the number of observations for each household type               
+       caption = "Based on:
+       Male-headed, typical: 595 observations
+       Male-headed, large: 187 observations
+       Female-headed: 144 observations") +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
-                                "Noncoffee",
-                                "Coffee"),
+                                "Noncocoa",
+                                "cocoa"),
                       labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
                                 "Income from main crop")) +
@@ -251,69 +191,38 @@ DATA %>%
 
 # The gap of the absolute median income to the Living Income Benchmark - bar chart
 
-## Sample Graph
-```{r, echo=FALSE, include=TRUE}
-all %>% 
-  filter(!is.na(Gender)) %>% 
-  group_by(Gender) %>% 
-  summarise(Gap = median(gap),
-            Noncoffee = median(noncoffee_income_U + Food_Income_U),
-            Coffee = median(coffee_income_net_U)) %>% 
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
-  mutate(Component = factor(Component, levels = c("Gap", "Noncoffee", "Coffee"))) %>% 
-  ggplot(aes(y = Income, x = Gender, fill = Component)) +
-  geom_bar(position = "stack", stat = "identity") +
-  labs(title = "Median values", 
-       y = "USD/year/household",
-       x = "",
-       caption = "Female-headed: n = 1516 \n Male-headed: n = 3487") +
-  scale_fill_discrete(breaks=c("Gap",
-                                "Noncoffee",
-                                "Coffee"),
-                      labels=c("Gap to the Living Income Benchmark",
-                                "Other income",
-                                "Income from main crop")) +
-  scale_y_continuous(labels = comma) +
-  theme(panel.grid.major.x = element_blank(), 
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank(),
-        plot.title = element_text(hjust = 0.5),
-        legend.position="bottom",
-        legend.title = element_blank(),
-        plot.caption = element_text(hjust = 0)) +
-  geom_text(aes(label = round(Income)), position = position_stack(vjust = 0.5), size = 3) 
-```
-
-## Sample Code
-```{r, echo=TRUE, eval=FALSE}
+```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DATA %>% s
-# Group by gender
-  group_by(GENDER COLUMN) %>% 
+DATA %>% 
+# Group by household type
+  group_by(grouping) %>% 
 # For each gender, summarize the median gap to the living income, 
-# the median non-coffee income, and the median coffee income. 
-  summarise(Gap = median(LI BENCHMARK - NET TOTAL INCOME COLUMN),
-            Noncoffee = median(NET NONCOFFEE COLUMN + AT HOME FOOD INCOME COLUMN),
-            Coffee = median(NET COFFEE INCOME COLUMN)) %>% 
+# the median non-cocoa income, and the median cocoa income. 
+  summarise(Gap = median(benchmark - total_hh_income_2018),
+            Noncocoa = median(total_hh_income_2018 - total_cocoa_income_2018),
+            cocoa = median(total_cocoa_income_2018)) %>% 
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
+  gather(key = "Component", value = "Income", Gap:cocoa) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
-                            levels = c("Gap", "Noncoffee", "Coffee"))) %>% 
+                            levels = c("Gap", "Noncocoa", "cocoa"))) %>% 
 # Generate ggplot graph for income by gender and income component  
-  ggplot(aes(y = Income, x = GENDER COLUMN, fill = Component)) +
+  ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Median values", 
        y = "USD/year/household",
        x = "",
-# Update X's in this character string to the number of observations for each household type       
-       caption = "Female-headed: n = XXX \n Male-headed: n = XXX") +
+# Manually update the numbers in this character string to the number of observations for each household type               
+       caption = "Based on:
+       Male-headed, typical: 595 observations
+       Male-headed, large: 187 observations
+       Female-headed: 144 observations") +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
-                                "Noncoffee",
-                                "Coffee"),
+                                "Noncocoa",
+                                "cocoa"),
                       labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
                                 "Income from main crop")) +
@@ -337,84 +246,26 @@ DATA %>% s
             size = 3) 
 ```
 
-```{r, eval=FALSE, echo=FALSE}
-# This is the median of the mean approach 
-all %>% 
-  group_by(Gender) %>% 
-  summarise(Mean_coffee = mean(coffee_income_net_percent_sample),
-            Mean_noncoffee = mean(1 - coffee_income_net_percent_sample),
-            Median_total = median(total_income_u),
-            Food = median(Food_Income)) %>% 
-  mutate(Coffee = Mean_coffee*Median_total,
-         Noncoffee = Mean_noncoffee*Median_total) %>% 
-gather(key = "Component", value = "Income", Food:Noncoffee) %>% 
-  ggplot(aes(y = Income, fill = Component, x = Gender)) +
-  geom_bar(position = "stack", stat = "identity") +
-  facet_wrap(~Entity.Saved.entity.type) +
-  geom_col() +
-  labs(title = "Median net total income by income type, mill/no mill, and gender",
-       y = "Median Net Total Income (USD)") +
-  scale_y_continuous(labels = comma) 
-
-```
-
 \newpage
 
 # The gap of the relative median income to the Living Income Benchmark - bar chart
 
-## Sample Graph
-```{r, echo=FALSE, include=TRUE}
-all %>% 
-  filter(!is.na(Gender)) %>% 
-  group_by(Gender) %>% 
-  summarise(Gap = median(gap)/
-              median(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U),
-            Noncoffee = median(noncoffee_income_U + Food_Income_U)/
-              median(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U),
-            Coffee = median(coffee_income_net_U)/
-              median(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U)) %>% 
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
-  mutate(Component = factor(Component, levels = c("Gap", "Noncoffee", "Coffee"))) %>% 
-  ggplot(aes(x = Gender, y = Income, fill = Component)) +
-  geom_col(position = "fill") +
-  labs(title = "Median values in relation to the benchmark value", 
-       y = "% of the benchmark value",
-       x = "",
-       caption = "Female-headed: n = 1516 \n Male-headed: n = 3487") +
-  scale_fill_discrete(breaks=c("Gap",
-                                "Noncoffee",
-                                "Coffee"),
-                      labels=c("Gap to the Living Income Benchmark",
-                                "Other income",
-                                "Income from main crop")) +
-  scale_y_continuous(labels = percent) +
-  theme(panel.grid.major.x = element_blank(), 
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank(),
-        plot.title = element_text(hjust = 0.5),
-        legend.position="bottom",
-        legend.title = element_blank(),
-        plot.caption = element_text(hjust = 0)) +
-      geom_text(aes(label = label_percent(accuracy = 1L)(Income)), position = position_stack(vjust = 0.5), size = 3)
-```
-
-## Sample Code
 ```{r, echo=TRUE, eval=FALSE}
 ## The first section of this code summarizes and formats the data to be graph-ready
 DATA %>% 
 # Group by gender
   group_by(GENDER COLUMN) %>% 
 # For each gender, summarize the median gap to the living income, 
-# the median non-coffee income, and the median coffee income. 
+# the median non-cocoa income, and the median cocoa income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
   summarise(Gap = median(LI BENCHMARK - NET TOTAL INCOME COLUMN)/LI BENCHMARK,
-            Noncoffee = median(NET NONCOFFEE COLUMN + AT HOME FOOD INCOME COLUMN)/LI BENCHMARK,
-            Coffee = median(NET COFFEE INCOME COLUMN)/LI BENCHMARK %>% 
+            Noncocoa = median(NET NONcocoa COLUMN + AT HOME FOOD INCOME COLUMN)/LI BENCHMARK,
+            cocoa = median(NET cocoa INCOME COLUMN)/LI BENCHMARK %>% 
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
+  gather(key = "Component", value = "Income", Gap:cocoa) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
-                            levels = c("Gap", "Noncoffee", "Coffee"))) %>% 
+                            levels = c("Gap", "Noncocoa", "cocoa"))) %>% 
 # Generate ggplot graph for income by gender and income component  
   ggplot(aes(y = Income, x = GENDER COLUMN, fill = Component)) +
 # Assign graph as stacked bar chart  
@@ -427,8 +278,8 @@ DATA %>%
        caption = "Female-headed: n = XXX \n Male-headed: n = XXX") +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
-                                "Noncoffee",
-                                "Coffee"),
+                                "Noncocoa",
+                                "cocoa"),
                       labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
                                 "Income from main crop")) +
@@ -464,11 +315,11 @@ all %>%
   filter(!is.na(Gender)) %>% 
   group_by(Gender) %>% 
   summarise(Gap = median(gap),
-            Noncoffee = median(noncoffee_income_U),
+            Noncocoa = median(noncocoa_income_U),
             Food = median(Food_Income_U),
-            Coffee = median(coffee_income_net_U)) %>% 
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
-  mutate(Component = factor(Component, levels = c("Gap", "Noncoffee", "Food", "Coffee"))) %>% 
+            cocoa = median(cocoa_income_net_U)) %>% 
+  gather(key = "Component", value = "Income", Gap:cocoa) %>% 
+  mutate(Component = factor(Component, levels = c("Gap", "Noncocoa", "Food", "cocoa"))) %>% 
   ggplot(aes(y = Income, x = Gender, fill = Component)) +
   geom_bar(position = "stack", stat = "identity") +
   labs(title = "Median values", 
@@ -477,8 +328,8 @@ all %>%
        caption = "Female-headed: n = 1516 \n Male-headed: n = 3487") +
   scale_fill_discrete(breaks=c("Gap",
                                "Food",
-                                "Noncoffee",
-                                "Coffee"),
+                                "Noncocoa",
+                                "cocoa"),
                       labels=c("Gap to the Living Income Benchmark",
                                "Value of crops comsumed at home",
                                 "Other income",
@@ -502,16 +353,16 @@ DATA %>% s
 # Group by gender
   group_by(GENDER COLUMN) %>% 
 # For each gender, summarize the median gap to the living income, 
-# the median non-coffee income, and the median coffee income. 
+# the median non-cocoa income, and the median cocoa income. 
   summarise(Gap = median(LI BENCHMARK - NET TOTAL INCOME COLUMN),
-            Noncoffee = median(NET NONCOFFEE COLUMN),
+            Noncocoa = median(NET NONcocoa COLUMN),
             Food = median(AT HOME FOOD INCOME COLUMN),
-            Coffee = median(NET COFFEE INCOME COLUMN)) %>% 
+            cocoa = median(NET cocoa INCOME COLUMN)) %>% 
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
+  gather(key = "Component", value = "Income", Gap:cocoa) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
-                            levels = c("Gap", "Food", "Noncoffee", "Coffee"))) %>% 
+                            levels = c("Gap", "Food", "Noncocoa", "cocoa"))) %>% 
 # Generate ggplot graph for income by gender and income component  
   ggplot(aes(y = Income, x = GENDER COLUMN, fill = Component)) +
 # Assign graph as stacked bar chart  
@@ -525,8 +376,8 @@ DATA %>% s
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
                                "Food",
-                               "Noncoffee",
-                               "Coffee"),
+                               "Noncocoa",
+                               "cocoa"),
                       labels=c("Gap to the Living Income Benchmark",
                                "Value of crops consumed at home",
                                 "Other income",
@@ -561,15 +412,15 @@ all %>%
   filter(!is.na(Gender)) %>% 
   group_by(Gender) %>% 
   summarise(Gap = median(gap)/
-              median(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U),
-            Noncoffee = median(noncoffee_income_U)/
-              median(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U),
-            Noncoffee = median(Food_Income_U)/
-              median(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U),
-            Coffee = median(coffee_income_net_U)/
-              median(gap + noncoffee_income_U + Food_Income_U + coffee_income_net_U)) %>% 
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
-  mutate(Component = factor(Component, levels = c("Gap","Food", "Noncoffee", "Coffee"))) %>% 
+              median(gap + noncocoa_income_U + Food_Income_U + cocoa_income_net_U),
+            Noncocoa = median(noncocoa_income_U)/
+              median(gap + noncocoa_income_U + Food_Income_U + cocoa_income_net_U),
+            Noncocoa = median(Food_Income_U)/
+              median(gap + noncocoa_income_U + Food_Income_U + cocoa_income_net_U),
+            cocoa = median(cocoa_income_net_U)/
+              median(gap + noncocoa_income_U + Food_Income_U + cocoa_income_net_U)) %>% 
+  gather(key = "Component", value = "Income", Gap:cocoa) %>% 
+  mutate(Component = factor(Component, levels = c("Gap","Food", "Noncocoa", "cocoa"))) %>% 
   ggplot(aes(x = Gender, y = Income, fill = Component)) +
   geom_col(position = "fill") +
   labs(title = "Median values in relation to the benchmark value", 
@@ -578,8 +429,8 @@ all %>%
        caption = "Female-headed: n = 1516 \n Male-headed: n = 3487") +
   scale_fill_discrete(breaks=c("Gap",
                                "Food",
-                                "Noncoffee",
-                                "Coffee"),
+                                "Noncocoa",
+                                "cocoa"),
                       labels=c("Gap to the Living Income Benchmark",
                                "Value of crops consumed at home",
                                 "Other income",
@@ -603,16 +454,16 @@ DATA %>%
 # Group by gender
   group_by(GENDER COLUMN) %>% 
 # For each gender, summarize the median gap to the living income, 
-# the median non-coffee income, and the median coffee income. 
+# the median non-cocoa income, and the median cocoa income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
   summarise(Gap = median(LI BENCHMARK - NET TOTAL INCOME COLUMN)/LI BENCHMARK,
-            Noncoffee = median(NET NONCOFFEE COLUMN + AT HOME FOOD INCOME COLUMN)/LI BENCHMARK,
-            Coffee = median(NET COFFEE INCOME COLUMN)/LI BENCHMARK %>% 
+            Noncocoa = median(NET NONcocoa COLUMN + AT HOME FOOD INCOME COLUMN)/LI BENCHMARK,
+            cocoa = median(NET cocoa INCOME COLUMN)/LI BENCHMARK %>% 
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:Coffee) %>% 
+  gather(key = "Component", value = "Income", Gap:cocoa) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
-                            levels = c("Gap", "Food", "Noncoffee", "Coffee"))) %>% 
+                            levels = c("Gap", "Food", "Noncocoa", "cocoa"))) %>% 
 # Generate ggplot graph for income by gender and income component  
   ggplot(aes(y = Income, x = GENDER COLUMN, fill = Component)) +
 # Assign graph as stacked bar chart  
@@ -626,8 +477,8 @@ DATA %>%
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
                                "Food",
-                               "Noncoffee",
-                               "Coffee"),
+                               "Noncocoa",
+                               "cocoa"),
                       labels=c("Gap to the Living Income Benchmark",
                                "Value of crops consumed at home",
                                "Other income",
