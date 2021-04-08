@@ -10,6 +10,7 @@ output:
 ---
 
 ```{r, echo=FALSE, fig.align='center'}
+library(knitr)
 include_graphics("food-lab-logo-85px.png")
 ```
 
@@ -606,52 +607,25 @@ DATA %>%
 
 # Foster–Greer–Thorbecke (FGT) index
 
-## Sample Graph
-```{r, echo=FALSE, include=TRUE}
-all$gap <- ifelse(all$gap < 0, 0, all$gap)
-
-all %>% 
-  filter(!is.na(Gender)) %>% 
-  group_by(Gender) %>% 
-  summarise(FGT = mean(gap/6844)) %>% 
-  ggplot(aes(x = Gender, y = FGT)) +
-  geom_col(fill= "red") +
-  labs(title = "FGT index", 
-       y = "Index value",
-       x = "",
-       caption = "Female-headed: n = 1516 \n Male-headed: n = 3487") +
-  scale_y_continuous(labels = percent) +
-  theme(panel.grid.major.x = element_blank(), 
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank(),
-        plot.title = element_text(hjust = 0.5),
-        plot.caption = element_text(hjust = 0)) +
-  geom_text(aes(label = label_percent(accuracy = 1L)(FGT)), position = position_stack(vjust = 0.5), size = 3) 
-```
-
-## Sample Code
-```{r, eval=FALSE, echo=TRUE}
-# For each household, calculate the gap to the Living Income Benchmark
-DATA$gap <- LIVING INCOME BENCHMARK - DATA$TOTAL HH INCOME COLUMN
-# For all households above the living income benchmark,
-# re-assign their income gap as 0
-DATA$gap <- ifelse(DATA$gap < 0, 0, DATA$gap)
-
+```{r,}
 DATA %>% 
-# Group by gender  
-  group_by(GENDER COLUMN) %>% 
+# Group by household type  
+  group_by(grouping) %>% 
 # For each gender, calculate the average Foster–Greer–Thorbecke (FGT) index 
-  summarise(FGT = mean(gap/LIVING INCOME BENCHMARK)) %>% 
+  summarise(FGT = mean(fgt_gap)) %>% 
 # Generate ggplot graph for percentage by gender 
-  ggplot(aes(x = GENDER COLUMN, y = FGT)) +
+  ggplot(aes(x = grouping, y = FGT)) +
 # Assign graph as bar graph and color bars red for aesthetics   
   geom_col(fill= "red") +
 # Label the graph title, axis, and caption    
   labs(title = "FGT index", 
        y = "Index value",
        x = "",
-# Update X's in this character string to the number of observations for each household type         
-       caption = "Female-headed: n = XXX \n Male-headed: n = XXX") +
+# Manually UPDATE the numbers in this character string to the number of observations for each household type               
+       caption = "Based on:
+       Male-headed, typical: 595 observations
+       Male-headed, large: 187 observations
+       Female-headed: 144 observations") +
 # Format y-axis labels with a percent  
   scale_y_continuous(labels = percent) +
 # Remove x-axis grid lines and tick marks    
