@@ -14,9 +14,19 @@ urlcolor: blue
 <p>&nbsp;</p>
 
 ```{r, echo=FALSE, fig.align='center'}
+# Add Sustainable Food Lab logo 
 library(knitr)
 include_graphics("food-lab-logo-85px.png")
+
+# Add hook so there is a space after each code chunk before each graphic
+if(is_latex_output()) {
+  plot_default <- knit_hooks$get("plot")
+  knit_hooks$set(plot = function(x, options) { 
+    x <- c("\\vspace{25pt}", plot_default(x, options))
+  })
+}
 ```
+
 
 \newpage
 
@@ -28,13 +38,13 @@ include_graphics("food-lab-logo-85px.png")
 
 * While the code presented in this document is intended to be as user friendly as possible, some basic knowledge of R is necessary. The user will need to understand how to navigate the basic R interface to run the script and export desired graphics. 
 
-# Setup
-
 * The example graphs below visualize a publicly-available data set based on previous work of KIT for the Living Income Community of Practice.
 
 * The sample data set assigns different Living Income benchmarks to different household types. No changes to the code are necessary if your data only has one benchmark for all household types or genders.  
 
-* To run your own data through the code provided below, it is imperative that you format your data in exactly the same structure as the sample data set. See the KIT Excel format [HERE](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn) to copy the exact column names for each key variable. If you alter any column names in your data file, you will need to update this code accordingly. Ensure that you format all numerical variables without any commas or currency notations.  
+* To run your own data through the code provided below, it is imperative that you format your data in exactly the same structure as the sample data set. See the KIT Excel format [HERE](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn) to copy the exact column names for each key variable. If you alter any column names in your data file, you will need to update this code accordingly. Ensure that you format all numerical variables without any commas or currency notations. 
+
+# Setup
 
 ```{r,echo=FALSE}
 knitr::opts_chunk$set(message = FALSE)
@@ -151,7 +161,7 @@ DATA %>%
 # Assign graph as stacked bar chart  
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
-  labs(title = "Mean values", 
+  labs(title = "Mean values in relation to the benchmark value", 
        y = "% of the benchmark value",
        x = "",
 # Manually UPDATE the numbers in this character string 
@@ -383,6 +393,8 @@ DATA %>%
             size = 3) 
 ```
 
+\newpage
+
 ## The gap of the relative median income to the Living Income Benchmark - bar chart
 
 ```{r,}
@@ -455,9 +467,9 @@ DATA %>%
 
 ```{r,}
 DATA %>% 
-# Group by gender  
+# Group by household type  
   group_by(grouping) %>% 
-# For each gender, calculate the percentage above the living income benchmark 
+# For each household type, calculate the percentage above the living income benchmark 
   summarise(Below = sum(below_benchmark)/n()) %>% 
 # Generate ggplot graph for percentage by gender 
   ggplot(aes(x = grouping, y = Below)) +
@@ -555,6 +567,7 @@ DATA %>%
   guides(color = guide_legend(nrow = 3)) 
 
 ```
+\newpage
 
 ## With mean and median
 ```{r,}
