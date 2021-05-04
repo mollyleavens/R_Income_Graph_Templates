@@ -42,7 +42,18 @@ if(is_latex_output()) {
 
 * The sample data set assigns different Living Income benchmarks to different household types. No changes to the code are necessary if your data only has one benchmark for all household types or genders.  
 
-* To run your own data through the code provided below, it is imperative that you format your data in exactly the same structure as the sample data set. See the KIT Excel format [HERE](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn) to copy the exact column names for each key variable. If you alter any column names in your data file, you will need to update this code accordingly. Ensure that you format all numerical variables without any commas or currency notations. 
+* **To run your own data through the code provided below, it is imperative that you format your data in exactly the same structure as the sample data set. See the KIT Excel format [HERE](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn) to copy the exact column names for each key variable. If you alter any column names in your data file, you will need to update this code accordingly. Ensure that you format all numerical variables without any commas or currency notations.**
+
+# Troubleshooting
+If you are encountering challenges and/or errors when running this code, try these five initial troubleshooting: 
+1. Check your 'working directory' and ensure it is the same file destination as where you have saved your data file CSV. A working directory error would occur when trying to upload the data file in the setup.  
+2. Ensure all the required libraries are installed on your computer. If you have never used the tidyverse, knitr, or scales libraries, you will need to individually install them first with the function install.packages("LIBRARY NAME").
+3. Ensure your data file formatting aligns exactly with the sample excel. The column names must be exactly the same without additional spaces or formatting. Ensure that you format all numerical variables without any commas or currency notations and any blank values are assigned NA.
+4. Check for extreme data outliers. Very large, small, or negative income calculations will result in skewed visualizations and could even lead to errors when running the code.
+5. Copy the exact error message from R into Google as someone has almost always previously asked about the error message on the forum StackOverflow. 
+
+If you have further questions about this document, please reach out to the Living Income Community of Practice at livingincome@isealalliance.org.
+
 
 # Setup
 
