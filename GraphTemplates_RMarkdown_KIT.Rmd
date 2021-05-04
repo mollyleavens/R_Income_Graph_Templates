@@ -47,13 +47,18 @@ if(is_latex_output()) {
 # Troubleshooting
 If you are encountering challenges and/or errors when running this code, try these five initial troubleshooting: 
 1. Check your 'working directory' and ensure it is the same file destination as where you have saved your data file CSV. A working directory error would occur when trying to upload the data file in the setup.  
+
 2. Ensure all the required libraries are installed on your computer. If you have never used the tidyverse, knitr, or scales libraries, you will need to individually install them first with the function install.packages("LIBRARY NAME").
+
 3. Ensure your data file formatting aligns exactly with the sample excel. The column names must be exactly the same without additional spaces or formatting. Ensure that you format all numerical variables without any commas or currency notations and any blank values are assigned NA.
+
 4. Check for extreme data outliers. Very large, small, or negative income calculations will result in skewed visualizations and could even lead to errors when running the code.
+
 5. Copy the exact error message from R into Google as someone has almost always previously asked about the error message on the forum StackOverflow. 
 
 If you have further questions about this document, please reach out to the Living Income Community of Practice at livingincome@isealalliance.org.
 
+\newpage
 
 # Setup
 
