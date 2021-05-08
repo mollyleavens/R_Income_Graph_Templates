@@ -145,7 +145,7 @@ df <- read_csv("KIT_Sample_Data.csv")
 
 # Replace variable names 
 df$income_main_crop <- df$total_cocoa_income_2018
-df$other_income <- df$
+#df$other_income <- df$
 df$total_hh_income <- df$total_hh_income_2018
 
 # Replace graph labels
@@ -206,9 +206,48 @@ median_color <-
 benchmark_color <-   
 ```
 
+### Default colors 
+```{r}
+## Bar graph sections
+# Gap to the mean
+gap_color <- "#ed3833"
+# Other income
+other_color <- "#b3dceb"  
+# Income from main crop
+main_color <- "#b3b3fa"
+# Value of crops consumed at home
+home_color <- "#fad8b3"
+  
+## Share of observations below the Living Income Benchmark
+# Note: these bars all appear the same color
+share_color <- "#ed3833"
+  
+## Distributional plots
+  
+## By household type
+# Group 1
+color_1 <- "#c1dfc1"
+# Group 2
+color_2 <- "#b6dce8"
+# Group 3
+color_3 <- "#c2c1fa"
+
+## With mean and median
+# Distribution curve 
+curve_color <- "#b6dce8" 
+# Income Mean
+mean_color <- "blue"  
+# Income Median
+median_color <-  "green"
+# Living Income Benchmark 
+benchmark_color <- "red"   
+```
+
 ## Fonts
 
 Set the font in this code chunk that you would like for all of the following graphs and data tables.
+
+If you do not set the font, the R default font, which is Arial. 
 
 ```{r}
 # If you have previously imported fonts in R, you can skip steps 1 and 2.
@@ -233,11 +272,10 @@ fonttable()
 font <- "PASTE THE NAME OF DESIRED FONT HERE." # e.g.: "CourierNewPSMT"
 
 # Step 5: Set default to your selected font.
-theme_set(theme_get() + theme(text = element_text(family = "CourierNewPSMT")))
+theme_set(theme_get() + theme(text = element_text(family = font)))
 
 ```
 
-## Example Dataset.  
 
 
 # The gap of the mean income to the Living Income Benchmark - bar chart
@@ -271,11 +309,10 @@ df %>%
                        ":", 
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
-# Label the legend  
-  scale_fill_discrete(breaks=c("Gap",
-                                "Other",
-                                "main_crop"),
-                      labels=c("Gap to the Living Income Benchmark",
+# Label the legend and assign custom colors 
+  scale_fill_manual(values=c(gap_color, other_color, main_color),
+                    breaks=c("Gap", "Other", "main_crop"),
+                    labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
                                 "Income from main crop")) +
 # Format y-axis labels with a comma  
@@ -396,11 +433,10 @@ df %>%
                        ":", 
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
-# Label the legend  
-  scale_fill_discrete(breaks=c("Gap",
-                                "Other",
-                                "main_crop"),
-                      labels=c("Gap to the Living Income Benchmark",
+# Label the legend and assign custom colors 
+  scale_fill_manual(values=c(gap_color, other_color, main_color),
+                    breaks=c("Gap", "Other", "main_crop"),
+                    labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
                                 "Income from main crop")) +
 # Format y-axis labels with a comma  
@@ -459,11 +495,10 @@ df %>%
                        ":", 
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
-# Label the legend  
-  scale_fill_discrete(breaks=c("Gap",
-                                "Other",
-                                "main_crop"),
-                      labels=c("Gap to the Living Income Benchmark",
+# Label the legend and assign custom colors 
+  scale_fill_manual(values=c(gap_color, other_color, main_color),
+                    breaks=c("Gap", "Other", "main_crop"),
+                    labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
                                 "Income from main crop")) +
 # Format y-axis labels with a comma  
@@ -524,15 +559,13 @@ df %>%
                        ":", 
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
-# Label the legend  
-  scale_fill_discrete(breaks=c("Gap",
-                               "Food",
-                               "Other",
-                               "main_crop"),
-                      labels=c("Gap to the Living Income Benchmark",
-                               "Value of crops consumed at home",
-                                "Other income",
-                                "Income from main crop")) +
+# Label the legend and assign custom colors 
+  scale_fill_manual(values=c(gap_color, home_color, other_color, main_color),
+                    breaks=c("Gap", "Food", "Other", "main_crop"),
+                    labels=c("Gap to the Living Income Benchmark",
+                             "Value of crops consumed at home",
+                              "Other income",
+                              "Income from main crop")) +
 # Wrap legend onto 2 lines to fit everything neatly     
   guides(fill = guide_legend(nrow = 2)) +
 # Format y-axis labels with a comma  
@@ -592,15 +625,13 @@ df %>%
                        ":", 
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
-# Label the legend  
-  scale_fill_discrete(breaks=c("Gap",
-                               "Food",
-                               "Other",
-                               "main_crop"),
-                      labels=c("Gap to the Living Income Benchmark",
-                               "Value of crops consumed at home",
-                               "Other income",
-                               "Income from main crop")) +
+# Label the legend and assign custom colors 
+  scale_fill_manual(values=c(gap_color, home_color, other_color, main_color),
+                    breaks=c("Gap", "Food", "Other", "main_crop"),
+                    labels=c("Gap to the Living Income Benchmark",
+                             "Value of crops consumed at home",
+                              "Other income",
+                              "Income from main crop")) +
 # Wrap legend onto 2 lines to fit everything neatly     
   guides(fill = guide_legend(nrow = 2)) +
 # Format y-axis labels with a comma and assign limits 0-100% 
