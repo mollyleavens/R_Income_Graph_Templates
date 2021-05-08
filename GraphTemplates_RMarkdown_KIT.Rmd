@@ -72,7 +72,7 @@ knitr::opts_chunk$set(message = FALSE)
 ## Fist, load the R libraries that have the necessary functions for this analysis. 
 
 # If you have not previously used these libraries, 
-# you will need to instaLl them with the function install.packages("LIBRARY NAME")
+# you will need to instaLl them with the function install.packages("LIBRARY NAME"). For example: install.packages(tidyverse)
 library(tidyverse)
 library(knitr)
 library(scales)
@@ -85,11 +85,9 @@ library(scales)
 
 # If your original data file is saved as an Excel, export it as a CSV file.
 # Ensure the top row is only column names.
-# Replace 'KIT_Sample_Data' with the name of your data file.
 
-DATA <- read_csv("KIT_Sample_Data.csv")
+DF <- read_csv("NAME OF DATA FILE.csv")
 
-# Preparing data table with the number of 
 ```
 
 \newpage
@@ -97,9 +95,28 @@ DATA <- read_csv("KIT_Sample_Data.csv")
 # User entered data
 
 ```{r}
+# Variable names
 
 
+income_main_crop <- "ANNUAL INCOME FROM MAIN CROP"
+other_income <- "HH INCOME FROM ALL OTHER SOURCES"
 
+# If you do not have this, 
+total_hh_income <- "TOTAL HH INCOME"
+
+  
+variable names, graph label information, colors, etc, and after that, no changes would be required.
+
+```
+
+
+```{r}
+
+DF <- read_csv("KIT_Sample_Data.csv")
+
+income_main_crop <- total_cocoa_income_2018
+other_income <- 
+total_hh_income <- total_hh_income_2018 
 
 ```
 
@@ -108,7 +125,7 @@ DATA <- read_csv("KIT_Sample_Data.csv")
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DATA %>% 
+DF %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each household type, summarize the mean gap to the living income, 
@@ -132,9 +149,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type  
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -171,7 +188,7 @@ DATA %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DATA %>% 
+DF %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each household type, summarize the mean gap to the living income, 
@@ -196,9 +213,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string 
   # to the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -235,7 +252,7 @@ DATA %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DATA %>% 
+DF %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each gender, summarize the median gap to the living income, 
@@ -259,9 +276,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -298,7 +315,7 @@ DATA %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DATA %>% 
+DF %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each gender, summarize the median gap to the living income, 
@@ -323,9 +340,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -364,7 +381,7 @@ DATA %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DATA %>% 
+DF %>% 
 # Group by gender
   group_by(grouping) %>% 
 # For each gender, summarize the median gap to the living income, 
@@ -389,9 +406,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -432,7 +449,7 @@ DATA %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DATA %>% 
+DF %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each household type, summarize the median gap to the living income,
@@ -458,9 +475,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -500,7 +517,7 @@ DATA %>%
 # Share of those below the Living Income benchmark - bar chart
 
 ```{r,}
-DATA %>% 
+DF %>% 
 # Group by household type  
   group_by(grouping) %>% 
 # For each household type, calculate the percentage above the living income benchmark 
@@ -516,9 +533,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Format y-axis labels with a percent  
   scale_y_continuous(labels = percent) +
@@ -544,7 +561,7 @@ DATA %>%
 
 ## By household type
 ```{r,}
-DATA %>%
+DF %>%
 # Set x-axis to total household income
   ggplot(aes(x = total_hh_income_2018,
 # Color by household type            
@@ -575,9 +592,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Format x-axis labels as numbers with commas
 # If your data has extreme income outliers, 
@@ -607,7 +624,7 @@ DATA %>%
 
 ## With mean and median
 ```{r,}
-DATA %>%
+DF %>%
   # Set x-axis to key variable
   ggplot(aes(x = total_hh_income_2018)) +
   # Add density line. You can change the fill and line colors.
@@ -616,10 +633,10 @@ DATA %>%
   geom_vline(aes(xintercept = mean(benchmark), 
                  color = "Living Income Benchmark"), key_glyph = "path") +
   # Add vertical line for mean income 
-  geom_vline(aes(xintercept = mean(DATA$total_hh_income_2018), 
+  geom_vline(aes(xintercept = mean(DF$total_hh_income_2018), 
                  color = "Income Mean"), key_glyph = "path") +
   # Add vertical line for median income
-  geom_vline(aes(xintercept = median(DATA$total_hh_income_2018), 
+  geom_vline(aes(xintercept = median(DF$total_hh_income_2018), 
                  color = "Income Median"), key_glyph = "path") +
   # Add graph and axis labels
   labs(x = "Estimated Total Household Income (USD/year/household)",
@@ -627,9 +644,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
   # Format x-axis labels as numbers with commas
   # If your data has extreme income outliers, 
@@ -662,7 +679,7 @@ DATA %>%
 # Foster–Greer–Thorbecke (FGT) index
 
 ```{r,}
-DATA %>% 
+DF %>% 
 # Group by household type  
   group_by(grouping) %>% 
 # For each gender, calculate the average Foster–Greer–Thorbecke (FGT) index 
@@ -678,9 +695,9 @@ DATA %>%
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
        caption = paste("Based on:",
-                       names(table(DATA$grouping)), 
+                       names(table(DF$grouping)), 
                        ":", 
-                       as.numeric(table(DATA$grouping)), 
+                       as.numeric(table(DF$grouping)), 
                        "observations \n ", collapse = '')) +
 # Format y-axis labels with a percent  
   scale_y_continuous(labels = percent) +
