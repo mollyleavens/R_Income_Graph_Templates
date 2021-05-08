@@ -133,6 +133,23 @@ total_hh_income <- "TOTAL HH INCOME"
 DF$total_hh_income <- DF$ total_hh_income
 ```
 
+## Example dataset 
+```{r}
+DF <- read_csv("KIT_Sample_Data.csv")
+
+DF$income_main_crop <- DF$total_cocoa_income_2018
+other_income <- 
+total_hh_income <- DF$total_hh_income_2018
+currency <- "USD"
+
+#### Step 3: Replace graph labels
+main_crop <-"cocoa" 
+currency <- "USD"
+time_period <- "year"
+household <- "Household"
+```
+
+
 # Graph aesthetics changes 
 
 The following code chunk allows the user to define several graph aesthetics. 
@@ -169,42 +186,31 @@ plot
 Set the font in this code chunk that you would like for all of the following graphs and data tables.
 
 ```{r}
-Here, you can change the 
+# If you have previously imported fonts in R, you can skip steps 1 and 2.
 
-theme_set(theme_get() + theme(text = element_text(family = 'mono')))
-
-sans and mono 
-
-#
+# Step 1: Load extrafont library
 library(extrafont)
+
+# Step 2: Import fonts already on your system
+# For guidance on uploading a custom font, view [this article] (https://r-coder.com/custom-fonts-r/)
 font_import()
-# After running the font_import() function, you will likely be prompted with   # the following message: "Importing fonts may take a few minutes, depending   # on the number of fonts and the speed of the system. Continue? [y/n]"
-# Type Y, then enter and the function should run.
+# After running the font_import() function, you will likely be prompted with   
+  # the following message: "Importing fonts may take a few minutes, depending   
+  # on the number of fonts and the speed of the system. Continue? [y/n]"
+  # Type Y, then enter and the function should run.
 
-fonttable() # Table outputs all available fonts. 
+# Step 3: Output table with all available fonts.
+fonttable()  
 
+# Step 4: Select your desired font
+# Ensure you paste the 'FontName' as listed in the front table printed in step 3
+  # There should not be any spaces in the same pasted below
+font <- "PASTE THE NAME OF DESIRED FONT HERE." # e.g.: "CourierNewPSMT"
 
-```
-
-
-```{r}
-
-DF <- read_csv("KIT_Sample_Data.csv")
-
-DF$income_main_crop <- DF$total_cocoa_income_2018
-other_income <- 
-total_hh_income <- DF$total_hh_income_2018
-currency <- "USD"
-
-#### Step 3: Replace graph labels
-main_crop <-"cocoa" 
-currency <- "USD"
-time_period <- "year"
-household <- "Household"
-
+# Step 5: Set default to your selected font.
+theme_set(theme_get() + theme(text = element_text(family = "CourierNewPSMT")))
 
 ```
-
 
 # The gap of the mean income to the Living Income Benchmark - bar chart
 
