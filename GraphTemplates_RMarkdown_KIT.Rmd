@@ -84,10 +84,14 @@ library(scales)
 
 This section allows the user to enter the information specific to their dataset. The user should replace all the wording in ALL CAPS in the following code chunk.   
 
-When replacing the capitalized sections, retain the quotation marks. In other words, write your replacement within the quotation marks as this signals to R that you are not refferencing an object that already exists.   
+ALLINGING THE VARIBLE NAMES IS CRITICAL. 
 
-```{r}
-#### Step 1: Import data set
+When replacing the capitalized sections, retain the quotation marks. In other words, write your replacement within the quotation marks as this signals to R that you are not referencing an object that already exists.   
+
+For an example of how to fill in the following code chunk, see the following code chunk for the example dataset. 
+
+```{r,eval=FALSE, include=TRUE}
+####################### Import data set #######################
 
 # If you have troubles with the import, 
 # ensure the original data file is stored in your "working directory"
@@ -97,7 +101,7 @@ When replacing the capitalized sections, retain the quotation marks. In other wo
   # 'save as') as a CSV file before importing it here.
 # Ensure the top row of the Excel/CSV is only column names.
 
-DF <- read_csv("NAME OF DATA FILE.csv")
+df <- read_csv("NAME OF DATA FILE.csv")
 
 ## Make all column names syntactically valid
 # In R, column names must only consist of letters, numbers, periods, 
@@ -105,54 +109,55 @@ DF <- read_csv("NAME OF DATA FILE.csv")
 # If your excel has any column names that do not comply with this syntax,
   # the below code will alter the names accordingly. 
 
-names(DF) <- make.names(names(DF), unique=TRUE)
+names(df) <- make.names(names(df), unique=TRUE)
 
-#### Step 2: Replace variable names
+####################### Replace variable names #######################
 # In the below section, replace the words in all caps with the column   
-  # name present in your dataset. 
-# Ensure that you write the column name exactly as it appears in the CSV file. 
-# R variable names 
-income_main_crop <- "ANNUAL INCOME FROM MAIN CROP" 
-other_income <- "HH INCOME FROM ALL OTHER SOURCES"
-grouping <- "A valid variable name consists of letters, numbers and the dot or underline characters. The variable name starts with a letter or the dot not followed by a number."
+  # name present in your dataframe.
+# NOTE: Ensure that you write the column names exactly as they appear in your
+  # data's current dataframe. The make.names() function executed above may have
+  # altered some of the column names to enable R compatibility. Run names(df)
+  # for a list of your dataset's current column names.   
 
-#### Step 3: Replace graph labels
+# Income from main crop
+df$income_main_crop <- df$"VARIABLE NAME" 
+# Income from all other sources
+df$other_income <- df$"VARIABLE NAME"
+# Groups to compare incomes between
+  # e.g: gender, household size, farm type, etc.  
+df$grouping <- df$"VARIABLE NAME"
+
+####################### Replace graph labels #######################
 main_crop <- "NAME OF MAIN CROP" # e.g: "cocoa" 
 currency <- "CURRENCY OF INCOME DATA" # e.g: "USD"
 time_period <- "TIME PERIOD OF INCOME DATA" # e.g: "year"
-
 household <- 
 
 # If you do not already have a variable for total income,
   # you can enter the income_main_crop
 total_hh_income <- "TOTAL HH INCOME"
-
-
-
-
-DF$total_hh_income <- DF$ total_hh_income
 ```
 
 ## Example dataset 
 ```{r}
-DF <- read_csv("KIT_Sample_Data.csv")
+# Import data set
+df <- read_csv("KIT_Sample_Data.csv")
 
-DF$income_main_crop <- DF$total_cocoa_income_2018
-other_income <- 
-total_hh_income <- DF$total_hh_income_2018
-currency <- "USD"
+# Replace variable names 
+df$income_main_crop <- df$total_cocoa_income_2018
+df$other_income <- df$
+df$total_hh_income <- df$total_hh_income_2018
 
-#### Step 3: Replace graph labels
+# Replace graph labels
 main_crop <-"cocoa" 
 currency <- "USD"
 time_period <- "year"
 household <- "Household"
 ```
 
-
 # Graph aesthetics changes 
 
-The following code chunk allows the user to define several graph aesthetics. 
+The following code chunk allows the user to define graph colors and fonts. 
 
 OPTIONAL
 
@@ -160,25 +165,45 @@ This is helpful in matching the graphs to reports/presentations.
 
 ## Colors 
 ```{r}
+####################### Colors #######################
+If you would like R to assign default colors....
+
+# To see the names of all 657 the built-in colors, use colors()
+http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+
+## Bar graph sections
 # Gap to the mean
+gap_color <- 
 # Other income
+other_color <-   
 # Income from main crop
+main_color <- 
 # Value of crops consumed at home
-
-# Share of observations below the Living Income Benchmark
-
-Share of those below the Living Income Benchmark - distributional
-plot
+home_color <- 
+  
+## Share of observations below the Living Income Benchmark
+# Note: these bars all appear the same color
+share_color <- 
+  
+## Distributional plots
+  
 ## By household type
-# Female−headed
-# Male−headed, large
-# Male−headed, typical
+# Group 1
+color_1 <- 
+# Group 2
+color_2 <- 
+# Group 3
+color_3 <- 
 
 ## With mean and median
 # Distribution curve 
+curve_color <-   
 # Income Mean
+mean_color <-   
 # Income Median
+median_color <-  
 # Living Income Benchmark 
+benchmark_color <-   
 ```
 
 ## Fonts
@@ -212,11 +237,14 @@ theme_set(theme_get() + theme(text = element_text(family = "CourierNewPSMT")))
 
 ```
 
+## Example Dataset.  
+
+
 # The gap of the mean income to the Living Income Benchmark - bar chart
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DF %>% 
+df %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each household type, summarize the mean gap to the living income, 
@@ -239,9 +267,9 @@ DF %>%
        x = "",
 # Add caption with observation numbers for each household type  
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -278,7 +306,7 @@ DF %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DF %>% 
+df %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each household type, summarize the mean gap to the living income, 
@@ -302,9 +330,9 @@ DF %>%
        x = "",
 # Add caption with observation numbers for each household type            
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -341,7 +369,7 @@ DF %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DF %>% 
+df %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each gender, summarize the median gap to the living income, 
@@ -364,9 +392,9 @@ DF %>%
        x = "",
 # Add caption with observation numbers for each household type               
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -403,7 +431,7 @@ DF %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DF %>% 
+df %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each gender, summarize the median gap to the living income, 
@@ -427,9 +455,9 @@ DF %>%
        x = "",
 # Add caption with observation numbers for each household type         
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -468,7 +496,7 @@ DF %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DF %>% 
+df %>% 
 # Group by gender
   group_by(grouping) %>% 
 # For each gender, summarize the median gap to the living income, 
@@ -492,9 +520,9 @@ DF %>%
        x = "",
 # Add caption with observation numbers for each household type          
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -535,7 +563,7 @@ DF %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
-DF %>% 
+df %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each household type, summarize the median gap to the living income,
@@ -560,9 +588,9 @@ DF %>%
        x = "", 
 # Add caption with observation numbers for each household type            
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
@@ -602,7 +630,7 @@ DF %>%
 # Share of those below the Living Income benchmark - bar chart
 
 ```{r,}
-DF %>% 
+df %>% 
 # Group by household type  
   group_by(grouping) %>% 
 # For each household type, calculate the percentage above the living income benchmark 
@@ -617,9 +645,9 @@ DF %>%
        x = "",
 # Add caption with observation numbers for each household type    
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Format y-axis labels with a percent  
   scale_y_continuous(labels = percent) +
@@ -645,7 +673,7 @@ DF %>%
 
 ## By household type
 ```{r,}
-DF %>%
+df %>%
 # Set x-axis to total household income
   ggplot(aes(x = total_hh_income,
 # Color by household type            
@@ -675,9 +703,9 @@ DF %>%
        y = "Proportion of households",
 # Add caption with observation numbers for each household type               
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Format x-axis labels as numbers with commas
 # If your data has extreme income outliers, 
@@ -707,7 +735,7 @@ DF %>%
 
 ## With mean and median
 ```{r,}
-DF %>%
+df %>%
   # Set x-axis to key variable
   ggplot(aes(x = total_hh_income)) +
   # Add density line. You can change the fill and line colors.
@@ -716,19 +744,19 @@ DF %>%
   geom_vline(aes(xintercept = mean(benchmark), 
                  color = "Living Income Benchmark"), key_glyph = "path") +
   # Add vertical line for mean income 
-  geom_vline(aes(xintercept = mean(DF$total_hh_income), 
+  geom_vline(aes(xintercept = mean(df$total_hh_income), 
                  color = "Income Mean"), key_glyph = "path") +
   # Add vertical line for median income
-  geom_vline(aes(xintercept = median(DF$total_hh_income), 
+  geom_vline(aes(xintercept = median(df$total_hh_income), 
                  color = "Income Median"), key_glyph = "path") +
   # Add graph and axis labels
   labs(x = "Estimated Total Household Income (USD/year/household)",
        y = "Proportion of households",
 # Add caption with observation numbers for each household type             
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
   # Format x-axis labels as numbers with commas
   # If your data has extreme income outliers, 
@@ -761,7 +789,7 @@ DF %>%
 # Foster–Greer–Thorbecke (FGT) index
 
 ```{r,}
-DF %>% 
+df %>% 
 # Group by household type  
   group_by(grouping) %>% 
 # For each gender, calculate the average Foster–Greer–Thorbecke (FGT) index 
@@ -776,9 +804,9 @@ DF %>%
        x = "",
 # Add caption with observation numbers for each household type               
        caption = paste("Based on: \n", 
-                   paste(names(table(DF$grouping)), 
+                   paste(names(table(df$grouping)), 
                        ":", 
-                       as.numeric(table(DF$grouping)), 
+                       as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Format y-axis labels with a percent  
   scale_y_continuous(labels = percent) +
