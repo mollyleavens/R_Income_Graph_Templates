@@ -1,7 +1,7 @@
 ---
 title: "R Graph Templates for Visualizing Living Income"
 author: "Molly Leavens on behalf of the Sustainable Food Lab"
-date: "4/7/2021"
+date: "5/7/2021"
 output:  
   pdf_document:
     toc: yes
@@ -92,6 +92,13 @@ DATA <- read_csv("KIT_Sample_Data.csv")
 
 \newpage
 
+# User entered data
+
+```{r}
+
+```
+
+
 # The gap of the mean income to the Living Income Benchmark - bar chart
 
 ```{r,}
@@ -118,9 +125,9 @@ DATA %>%
        y = "USD/year/household",
        x = "",
 # Manually UPDATE the numbers in this character string to 
-  # the number of observations for each household type       
+  # the number of observations for each household type  
        caption = "Based on:
-       Male-headed, typical: 595 observations
+       Male-headed, typical: 'n()' observations
        Male-headed, large: 187 observations
        Female-headed: 144 observations") +
 # Label the legend  
