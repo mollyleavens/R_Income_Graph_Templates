@@ -88,6 +88,8 @@ library(scales)
 # Replace 'KIT_Sample_Data' with the name of your data file.
 
 DATA <- read_csv("KIT_Sample_Data.csv")
+
+# Preparing data table with the number of 
 ```
 
 \newpage
@@ -95,6 +97,9 @@ DATA <- read_csv("KIT_Sample_Data.csv")
 # User entered data
 
 ```{r}
+
+
+
 
 ```
 
@@ -126,10 +131,11 @@ DATA %>%
        x = "",
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type  
-       caption = "Based on:
-       Male-headed, typical: 'n()' observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
                                 "Noncocoa",
@@ -189,10 +195,11 @@ DATA %>%
        x = "",
 # Manually UPDATE the numbers in this character string 
   # to the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
                                 "Noncocoa",
@@ -251,10 +258,11 @@ DATA %>%
        x = "",
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
                                 "Noncocoa",
@@ -314,10 +322,11 @@ DATA %>%
        x = "",
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
                                 "Noncocoa",
@@ -379,10 +388,11 @@ DATA %>%
        x = "",
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
                                "Food",
@@ -447,10 +457,11 @@ DATA %>%
        x = "", 
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Label the legend  
   scale_fill_discrete(breaks=c("Gap",
                                "Food",
@@ -504,10 +515,11 @@ DATA %>%
        x = "",
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Format y-axis labels with a percent  
   scale_y_continuous(labels = percent) +
 # Remove x-axis grid lines and tick marks    
@@ -562,10 +574,11 @@ DATA %>%
        y = "Proportion of households",
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Format x-axis labels as numbers with commas
 # If your data has extreme income outliers, 
     # you may need to filter them or add x-axis limits so they do not warp the graph 
@@ -613,10 +626,11 @@ DATA %>%
        y = "Proportion of households",
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
   # Format x-axis labels as numbers with commas
   # If your data has extreme income outliers, 
     # you may need to filter them or add x-axis limits so they do not warp the graph 
@@ -663,10 +677,11 @@ DATA %>%
        x = "",
 # Manually UPDATE the numbers in this character string to 
   # the number of observations for each household type               
-       caption = "Based on:
-       Male-headed, typical: 595 observations
-       Male-headed, large: 187 observations
-       Female-headed: 144 observations") +
+       caption = paste("Based on:",
+                       names(table(DATA$grouping)), 
+                       ":", 
+                       as.numeric(table(DATA$grouping)), 
+                       "observations \n ", collapse = '')) +
 # Format y-axis labels with a percent  
   scale_y_continuous(labels = percent) +
 # Remove x-axis grid lines and tick marks    
