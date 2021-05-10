@@ -123,6 +123,11 @@ names(df) <- make.names(names(df), unique=TRUE)
 df$income_main_crop <- df$"VARIABLE NAME" 
 # Income from all other sources
 df$other_income <- df$"VARIABLE NAME"
+# Total HH income
+  # If you do not already have a named variable for total income, you can 
+  # instead assign the following line of code to total_hh_income:
+  # df$income_main_crop + df$other_income
+total_hh_income <- "TOTAL HH INCOME"
 # Groups to compare incomes between
   # e.g: gender, household size, farm type, etc.  
 df$grouping <- df$"VARIABLE NAME"
@@ -130,29 +135,25 @@ df$grouping <- df$"VARIABLE NAME"
 ####################### Replace graph labels #######################
 main_crop <- "NAME OF MAIN CROP" # e.g: "cocoa" 
 currency <- "CURRENCY OF INCOME DATA" # e.g: "USD"
-time_period <- "TIME PERIOD OF INCOME DATA" # e.g: "year"
-household <- 
 
-# If you do not already have a variable for total income,
-  # you can enter the income_main_crop
-total_hh_income <- "TOTAL HH INCOME"
 ```
 
 ## Example dataset 
 ```{r}
-# Import data set
+## Import data set
 df <- read_csv("KIT_Sample_Data.csv")
 
-# Replace variable names 
+## Replace variable names
+# Main crop
 df$income_main_crop <- df$total_cocoa_income_2018
-#df$other_income <- df$
+# Other income
+# df$other_income <- df$
+# Total income
 df$total_hh_income <- df$total_hh_income_2018
 
 # Replace graph labels
 main_crop <-"cocoa" 
 currency <- "USD"
-time_period <- "year"
-household <- "Household"
 ```
 
 # Graph aesthetics changes 
@@ -295,13 +296,13 @@ df %>%
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Other", "main_crop"))) %>% 
-# Generate ggplot graph for income by gender and income component  
+# Generate ggplot graph for income by groupings and income component  
   ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Mean values", 
-       y = paste(currency, "/", time_period, "/", household),
+       y = paste(currency, "/year/household)"),
        x = "",
 # Add caption with observation numbers for each household type  
        caption = paste("Based on: \n", 
@@ -357,7 +358,7 @@ df %>%
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Other", "main_crop"))) %>% 
-# Generate ggplot graph for income by gender and income component  
+# Generate ggplot graph for income by groupings and income component  
   ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
   geom_bar(position = "stack", stat = "identity") +
@@ -409,7 +410,7 @@ df %>%
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
-# For each gender, summarize the median gap to the living income, 
+# For each grouping, summarize the median gap to the living income, 
 # the median other income, and the median main_crop income. 
   summarise(Gap = median(benchmark - total_hh_income),
             Other = median(total_hh_income - income_main_crop),
@@ -419,13 +420,13 @@ df %>%
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Other", "main_crop"))) %>% 
-# Generate ggplot graph for income by gender and income component  
+# Generate ggplot graph for income by grouping and income component  
   ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Median values", 
-       y = paste(currency, "/", time_period, "/", household),
+       y = paste(currency, "/year/household)"),
        x = "",
 # Add caption with observation numbers for each household type               
        caption = paste("Based on: \n", 
@@ -470,7 +471,7 @@ df %>%
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
-# For each gender, summarize the median gap to the living income, 
+# For each grouping, summarize the median gap to the living income, 
 # the median other income, and the median main_crop income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
   summarise(Gap = median((benchmark - total_hh_income)/benchmark),
@@ -481,7 +482,7 @@ df %>%
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Other", "main_crop"))) %>% 
-# Generate ggplot graph for income by gender and income component  
+# Generate ggplot graph for income by grouping and income component  
   ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
   geom_bar(position = "fill", stat = "identity") +
@@ -532,9 +533,9 @@ df %>%
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
 df %>% 
-# Group by gender
+# Group by grouping
   group_by(grouping) %>% 
-# For each gender, summarize the median gap to the living income, 
+# For each grouping, summarize the median gap to the living income, 
 # the median other income, and the median main_crop income. 
   summarise(Gap = median(benchmark - total_hh_income),
             Other = median(total_hh_income - income_main_crop),
@@ -545,13 +546,13 @@ df %>%
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Food", "Other", "main_crop"))) %>% 
-# Generate ggplot graph for income by gender and income component  
+# Generate ggplot graph for income by grouping and income component  
   ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Median values", 
-       y = paste("(", currency, "/", time_period, "/", household, ")"),
+       y = paste("(", currency, "/year/household)"),
        x = "",
 # Add caption with observation numbers for each household type          
        caption = paste("Based on: \n", 
@@ -611,7 +612,7 @@ df %>%
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Food", "Other", "main_crop"))) %>% 
-# Generate ggplot graph for income by gender and income component  
+# Generate ggplot graph for income by grouping and income component  
   ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart 
   geom_bar(position = "fill", stat = "identity") +
@@ -666,7 +667,7 @@ df %>%
   group_by(grouping) %>% 
 # For each household type, calculate the percentage above the living income benchmark 
   summarise(Below = sum(below_benchmark)/n()) %>% 
-# Generate ggplot graph for percentage by gender 
+# Generate ggplot graph for percentage by grouping 
   ggplot(aes(x = grouping, y = Below)) +
 # Assign graph as bar graph and color bars red for aesthetics   
   geom_col(fill= share_color) +
@@ -704,6 +705,15 @@ df %>%
 
 ## By household type
 ```{r,}
+# This code drafts a dataframe of the percent above the LI benchmark for each group
+# THIS WILL BE USEd...
+below <- 
+  df %>%
+  group_by(grouping) %>% 
+  summarise(Percent = percent(sum(total_hh_income < benchmark)/n()))
+ 
+below <- paste(below$grouping, ": ", below$Percent, " below", sep = "")
+  
 df %>%
 # Set x-axis to total household income
   ggplot(aes(x = total_hh_income,
@@ -712,25 +722,23 @@ df %>%
 # Add density line. You can change the fill and line colors.
   geom_density(alpha = 0.9, color = "grey") +
   
+  for (i in 1:length(unique(df$grouping))) {
+  
 ### Add vertical lines for Living Income benchmark(s)
 # Add and/or subtract lines based on number of household types
 # and if you have a different benchmark for each.
-  geom_vline(aes(xintercept = 4001, 
-                 color = "Living Income Female-headed: 90% below"),
-             key_glyph = "path") +
-  geom_vline(aes(xintercept = 4742, 
-                 color = "Living Income Male-headed, typical: 91% below"),
-             key_glyph = "path") +
-  geom_vline(aes(xintercept = 5123, 
-                 color = "Living Income Male-headed, large: 59% below"),
-             key_glyph = "path") +
+  print(paste(geom_vline(aes(xintercept = unique(df$grouping)[i], 
+                 color = below[i]),
+             key_glyph = "path"), "+" ))
+  }
+    +
   scale_color_manual(name = "Legend", 
-                     values = c(paste("Living Income", names(table(df$grouping))[1], 90% "below" = color_1,
+                     values = c(paste("Living Income 90% below" = color_1,
                                 "Living Income Male-headed, typical: 91% below"= color_2,
                                 "Living Income Male-headed, large: 59% below"= color_3)) + 
 # Add graph and axis labels
   labs(x = paste("Estimated Total", household, "Income (", 
-                 currency, "/", time_period, "/", household, ")"),
+                 currency, "/year/household)"),
        y = "Proportion of households",
 # Add caption with observation numbers for each household type               
        caption = paste("Based on: \n", 
@@ -782,7 +790,7 @@ df %>%
                  color = "Income Median"), key_glyph = "path") +
   # Add graph and axis labels
   labs(x = paste("Estimated Total", household, "Income (", 
-                 currency, "/", time_period, "/", household, ")", 
+                 currency, "/", "year/household", 
                  collapse = ''),
        y = "Proportion of households",
 # Add caption with observation numbers for each household type             
@@ -820,9 +828,9 @@ df %>%
 df %>% 
 # Group by household type  
   group_by(grouping) %>% 
-# For each gender, calculate the average Foster–Greer–Thorbecke (FGT) index 
+# For each grouping, calculate the average Foster–Greer–Thorbecke (FGT) index 
   summarise(FGT = mean(fgt_gap)) %>% 
-# Generate ggplot graph for percentage by gender 
+# Generate ggplot graph for percentage by grouping 
   ggplot(aes(x = grouping, y = FGT)) +
 # Assign graph as bar graph and color bars red for aesthetics   
   geom_col(fill= "red") +
@@ -852,3 +860,62 @@ df %>%
             size = 3) 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+## With mean and median
+```{r,}
+df %>%
+  # Set x-axis to key variable
+  ggplot(aes(x = total_hh_income)) +
+  # Add density line. You can change the fill and line colors.
+  geom_smooth(color = "#add8e6", fill = "#add8e6") +
+  # Add vertical line for living income
+  geom_vline(aes(xintercept = mean(benchmark), 
+                 color = "Living Income Benchmark"), key_glyph = "path") +
+  # Add vertical line for mean income 
+  geom_vline(aes(xintercept = mean(df$total_hh_income), 
+                 color = "Income Mean"), key_glyph = "path") +
+  # Add vertical line for median income
+  geom_vline(aes(xintercept = median(df$total_hh_income), 
+                 color = "Income Median"), key_glyph = "path") +
+  # Add graph and axis labels
+  labs(x = paste("Estimated Total", household, "Income (", 
+                 currency, "/year/household", 
+                 collapse = ''),
+       y = "Proportion of households",
+# Add caption with observation numbers for each household type             
+       caption = paste("N =", nrow(df), ", bin size = ", 
+                       "BINSIZE", collapse = '')) +
+  # Format x-axis labels as numbers with commas
+  # If your data has extreme income outliers, 
+    # you may need to filter them or add x-axis limits so they do not warp the graph 
+  scale_x_continuous(labels = comma) +
+  # Remove y-axis labels and ticks
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+  # Remove background grid (the grid is the default)
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  # Move the legend to the bottom of the graph
+        legend.position="bottom",
+  # Remove legend title
+        legend.title = element_blank(),
+  # Remove gray background for legend symbols 
+        legend.key=element_rect(fill=NA),
+  # Put a box around the legend
+        legend.box.background = element_rect(),
+  # Move caption to desired location
+        plot.caption = element_text(hjust = 0)) +
+  # Manually add legend 
+  scale_color_manual(values = c("Living Income Benchmark"= "red",
+                                "Income Mean"= "blue",
+                                "Income Median"="green"))
+```
