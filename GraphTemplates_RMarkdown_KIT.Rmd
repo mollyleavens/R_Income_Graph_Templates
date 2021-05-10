@@ -164,10 +164,11 @@ OPTIONAL
 
 This is helpful in matching the graphs to reports/presentations.  
 
+If you would like R to assign default colors....
+
 ## Colors 
 ```{r}
 ####################### Colors #######################
-If you would like R to assign default colors....
 
 # To see the names of all 657 the built-in colors, use colors()
 http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
@@ -302,7 +303,7 @@ df %>%
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Mean values", 
-       y = paste(currency, "/year/household)"),
+       y = paste("(", currency, "/year/household)", sep = ""),
        x = "",
 # Add caption with observation numbers for each household type  
        caption = paste("Based on: \n", 
@@ -426,7 +427,7 @@ df %>%
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Median values", 
-       y = paste(currency, "/year/household)"),
+       y = paste("(", currency, "/year/household)", sep = ""),
        x = "",
 # Add caption with observation numbers for each household type               
        caption = paste("Based on: \n", 
@@ -552,7 +553,7 @@ df %>%
   geom_bar(position = "stack", stat = "identity") +
 # Label the graph title, axis, and caption  
   labs(title = "Median values", 
-       y = paste("(", currency, "/year/household)"),
+       y = paste("(", currency, "/year/household)", sep = ""),
        x = "",
 # Add caption with observation numbers for each household type          
        caption = paste("Based on: \n", 
@@ -737,8 +738,8 @@ df %>%
                                 "Living Income Male-headed, typical: 91% below"= color_2,
                                 "Living Income Male-headed, large: 59% below"= color_3)) + 
 # Add graph and axis labels
-  labs(x = paste("Estimated Total", household, "Income (", 
-                 currency, "/year/household)"),
+  labs(x = paste("Estimated Total Household Income (", 
+                 currency, "/year/household)", sep = ""),
        y = "Proportion of households",
 # Add caption with observation numbers for each household type               
        caption = paste("Based on: \n", 
@@ -857,7 +858,7 @@ df %>%
 # Add percents to each graph bar   
   geom_text(aes(label = label_percent(accuracy = 1L)(FGT)),
             position = position_stack(vjust = 0.5), 
-            size = 3) 
+            size = 3)) 
 ```
 
 
