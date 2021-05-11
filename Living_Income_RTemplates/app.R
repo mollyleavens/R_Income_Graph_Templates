@@ -54,29 +54,6 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
     
-    # df <- reactive({
-    #     req(input$file)
-    #     ext <- file_ext(input$file$name)
-    #     switch(ext,
-    #            csv = vroom(input$file$datapath, delim = ","),
-    #            tsv = vroom(input$file$datapath, delim = "\t"),
-    #            validate("Invalid file; Please upload a .csv or .tsv file")
-    #     )
-    # })
-    
-#     df <- eventReactive(input$file{
-#         inFile <- input$file
-#         # Instead # if (is.null(inFile)) ... use "req"
-#         req(inFile)
-#         # Changes in read.table 
-#         #df <- read.table(inFile$datapath)
-#         df <- read_csv(inFile)
-#         vars <- names(df)
-#         # Update select input immediately after clicking on the action button. 
-#         updateVarSelectInput(session, "total_hh_income", choices = vars)
-#     
-# })
-    
     reactive_data <- reactive({
         print(input$file$datapath)
         data <- read_csv(input$file$datapath)
@@ -86,9 +63,7 @@ server <- function(input, output, session) {
     output$barGraph <- renderPlot({
         
         data <- reactive_data()
-        # inFile <- input$file
-        # req(input$file)
-        # df <- read_csv(inFile$datapath)
+
         updateSelectInput(session, "total_hh_income",
                           choices = colnames(data),
                           selected = input$total_hh_income) # this keeps the input on the last thing selected on tab-change
@@ -107,10 +82,6 @@ server <- function(input, output, session) {
         
         colnames(data)[which(colnames(data)== input$total_hh_income)] = "total_hh_income"
         colnames(data)[which(colnames(data)== input$income_main_crop)] = "income_main_crop"
-
-
-    #data$income_main_crop < - 
-
     
         ## The first section of this code summarizes and formats the data to be graph-ready
        plot <- data %>% 
@@ -120,12 +91,12 @@ server <- function(input, output, session) {
             # the mean other income, and the mean main_crop income 
             summarise(Gap = mean(benchmark - total_hh_income),
                       Other = mean(total_hh_income - income_main_crop),
-                      main_crop = mean(income_main_crop)) %>% 
+                      MainCrop = mean(income_main_crop)) %>% 
             # Gather each income components into one column so the data is in 'long' format
-            gather(key = "Component", value = "Income", Gap:main_crop) %>% 
+            gather(key = "Component", value = "Income", Gap:MainCrop) %>% 
             # Re-level the income factors for the order you want them stacked on the graph  
             mutate(Component = factor(Component, 
-                                      levels = c("Gap", "Other", "main_crop"))) %>% 
+                                      levels = c("Gap", "Other", "MainCrop"))) %>% 
             # Generate ggplot graph for income by groupings and income component  
             ggplot(aes(y = Income, x = grouping, fill = Component)) +
             # Assign graph as stacked bar chart  
@@ -136,16 +107,16 @@ server <- function(input, output, session) {
                  x = "",
                  # Add caption with observation numbers for each household type  
                  caption = paste("Based on: \n", 
-                                 paste(names(table(df$grouping)), 
+                                 paste(names(table(data$grouping)), 
                                        ":", 
-                                       as.numeric(table(df$grouping)), 
+                                       as.numeric(table(data$grouping)), 
                                        "observations \n ", collapse = ''), collapse = '')) +
             # Label the legend and assign custom colors 
             scale_fill_manual(values=c(gap_color, other_color, main_color),
-                              breaks=c("Gap", "Other", main_crop),
+                              breaks=c("Gap", "Other", "MainCrop"),
                               labels=c("Gap to the Living Income Benchmark",
                                        "Other income",
-                                       paste("Income from", main_crop))) +
+                                       paste("Income from", input$main_crop))) +
             # Format y-axis labels with a comma  
             scale_y_continuous(labels = comma) +
             # Remove x-axis grid lines and tick marks  
