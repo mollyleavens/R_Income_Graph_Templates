@@ -6,9 +6,8 @@
 #
 #    http://shiny.rstudio.com/
 #
-
+library(rsconnect)
 library(shiny)
-library(vroom)
 library(knitr)
 library(scales)
 library(tidyverse)
@@ -23,13 +22,10 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            fileInput("file", "Choose .csv or .tsv File",
+            fileInput("file", "Choose .csv File",
                       multiple = FALSE,
-                      accept = c(".csv", ".tsv")),
+                      accept = c(".csv")),
             
-        selectInput("total_hh_income", "Total income", list("Location")),
-        selectInput("income_main_crop", "Income from main crop", list("Location")),
-        
         h3("Enter Graph Labels"),         
             # Replace graph labels
             textInput("main_crop", "Name of main crop", placeholder = "e.g: cocoa"),
@@ -45,12 +41,32 @@ ui <- fluidPage(
         ),
 
         # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("barGraph")
-        )
+        mainPanel(navbarPage(" ",
+            
+            tabPanel("Bar Graphs - Mean",
+                tabsetPanel(type = "tabs",
+                        tabPanel("Gap of the mean income to the Living Income Benchmark",                
+                                 selectInput("total_hh_income", "Total income", choices = NULL),
+                                 selectInput("income_main_crop", "Income from main crop", choices = NULL),
+                                 plotOutput("barGraph"),
+                        tabPanel("Gap of the relative mean income to the Living Income Benchmark")
+                                )
+                            ),
+
+            tabPanel("Bar Graphs - Median",
+                     tabsetPanel(type = "tabs",
+                                 tabPanel("Gap of the median income to the Living Income Benchmark"),               
+                        
+                                 tabPanel("Gap of the relative median income to the Living Income Benchmark")
+                                 )
+                    ),
+        tabPanel("Distribution Graphs"),
+        tabPanel("Component3")
     )
 )
-
+)
+)
+)
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
     
