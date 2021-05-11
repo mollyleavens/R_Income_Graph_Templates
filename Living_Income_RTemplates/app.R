@@ -26,6 +26,10 @@ ui <- fluidPage(
                       multiple = FALSE,
                       accept = c(".csv")),
             
+        h3("Select Variables"), 
+            selectInput("total_hh_income", "Total income", choices = NULL),
+            selectInput("income_main_crop", "Income from main crop", choices = NULL),
+        
         h3("Enter Graph Labels"),         
             # Replace graph labels
             textInput("main_crop", "Name of main crop", placeholder = "e.g: cocoa"),
@@ -43,30 +47,27 @@ ui <- fluidPage(
         # Show a plot of the generated distribution
         mainPanel(navbarPage(" ",
             
-            tabPanel("Bar Graphs - Mean",
+            tabPanel("Gap to the Living Income Benchmark - Bar Graphs",
                 tabsetPanel(type = "tabs",
-                        tabPanel("Gap of the mean income to the Living Income Benchmark",                
-                                 selectInput("total_hh_income", "Total income", choices = NULL),
-                                 selectInput("income_main_crop", "Income from main crop", choices = NULL),
-                                 plotOutput("barGraph"),
-                        tabPanel("Gap of the relative mean income to the Living Income Benchmark")
-                                )
-                            ),
-
-            tabPanel("Bar Graphs - Median",
-                     tabsetPanel(type = "tabs",
-                                 tabPanel("Gap of the median income to the Living Income Benchmark"),               
+                        tabPanel("Absolute Mean",           
+                                 plotOutput("abMeanBarGraph")),
+                        tabPanel("Relative Mean",
+                                 plotOutput("relMeanBarGraph")),
+                        tabPanel("Absolute Median",
+                                 plotOutput("abMedianBarGraph")),
+                        tabPanel("Relative Median",
+                                 plotOutput("relMedianBarGraph"))
+                        )
                         
-                                 tabPanel("Gap of the relative median income to the Living Income Benchmark")
-                                 )
-                    ),
-        tabPanel("Distribution Graphs"),
-        tabPanel("Component3")
+                ),
+            
+            tabPanel("Distribution Graphs"),
+            tabPanel("Foster–Greer–Thorbecke (FGT) index")
     )
 )
 )
 )
-)
+
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
     

@@ -865,17 +865,6 @@ df %>%
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
 ## With mean and median
 ```{r,}
 df %>%
