@@ -40,7 +40,7 @@ ui <- fluidPage(
             textInput("other_color", "Other color", value = "#b3dceb"),
             textInput("main_color", "Main color", value = "#b3b3fa"),
         
-        actionButton("goButton", "Generate Plot", class = "btn-success"),
+        #actionButton("goButton", "Generate Plot", class = "btn-success"),
         
         ),
 
@@ -93,12 +93,11 @@ server <- function(input, output, session) {
                           choices = colnames(data),
                           selected = input$total_hh_income) # this keeps the input on the last thing selected on tab-change
         
-        updateSelectInput(session, "total_hh_income",
+        updateSelectInput(session, "income_main_crop",
                           choices = colnames(data),
-                          selected = input$total_hh_income) # this keeps the input on the last thing selected on tab-change
+                          selected = input$income_main_crop) # this keeps the input on the last thing selected on tab-change
         
-        
-        input$goButton
+        #input$goButton
         
         main_crop <- input$main_crop
         currency <- input$currency
@@ -106,8 +105,13 @@ server <- function(input, output, session) {
         other_color <- input$other_color
         main_color <- input$main_color
         
-        total_hh_income < - colnames(data)[colnames(data) == input$total_hh_income]
-        
+        colnames(data)[which(colnames(data)== input$total_hh_income)] = "total_hh_income"
+        colnames(data)[which(colnames(data)== input$income_main_crop)] = "income_main_crop"
+
+
+    #data$income_main_crop < - 
+
+    
         ## The first section of this code summarizes and formats the data to be graph-ready
        plot <- data %>% 
             # Group by household type
@@ -123,7 +127,7 @@ server <- function(input, output, session) {
             mutate(Component = factor(Component, 
                                       levels = c("Gap", "Other", "main_crop"))) %>% 
             # Generate ggplot graph for income by groupings and income component  
-            ggplot(aes_string(y = Income, x = grouping, fill = Component)) +
+            ggplot(aes(y = Income, x = grouping, fill = Component)) +
             # Assign graph as stacked bar chart  
             geom_bar(position = "stack", stat = "identity") +
             # Label the graph title, axis, and caption  
