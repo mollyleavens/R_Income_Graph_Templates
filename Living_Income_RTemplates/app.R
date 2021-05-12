@@ -1,31 +1,45 @@
 
+# App coded by Molly Leavens, a consultant of the Sustainable Food Lab, May 2021
+# Built for use by the Living Income Community of Practice
+
 # This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
 #
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+# load required libraries 
 library(rsconnect)
 library(shiny)
 library(knitr)
 library(scales)
 library(tidyverse)
+
+# Increase the Max upload size for user file upload from the default
 options(shiny.maxRequestSize = 30*1024^2)
 
-# Define UI for application that draws a histogram
+################### UI ###################
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Living Income R Graph Templates"),
-
-    # Sidebar with a slider input for number of bins 
+    titlePanel("Living Income Graph Generator"),
+    
+    textOutput("Add app description here"),
+    
+    # Sidebar  
     sidebarLayout(
+        # File upload # Just CSV for now, but could expand to others 
         sidebarPanel(
+            
+        p("If your original data file is saved as an Excel, export
+                    it as a CSV file (from Excel, 'save as') before importing it
+                    here. Ensure the top row of the Excel/CSV is only column names"),
+                
             fileInput("file", "Choose .csv File",
                       multiple = FALSE,
                       accept = c(".csv")),
-            
+        
+        p("After uploading your data file above, the dropdown menus for 
+                   variable section will autopopulate. Select the column name 
+                   from your data set that corresponds to each variable."),   
+        
         h3("Select Variables"), 
             selectInput("total_hh_income", "Total income", choices = NULL),
             selectInput("income_main_crop", "Income from main crop", choices = NULL),
@@ -35,6 +49,13 @@ ui <- fluidPage(
             textInput("main_crop", "Name of main crop", placeholder = "e.g: cocoa"),
             textInput("currency", "Currency", placeholder = "eg: USD"),
             
+        p("Replacing the default graph colors below is optional, but may be 
+                    helpful in matching the graphs to reports/presentations. 
+                    You have two options for entering colors into the boxes below. 
+                    1) List on of the 657 built-in colors recognized by this app. 
+                    See all colors here: http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+                    2) List a hex color code (as is currently there now)"), 
+        
         h3("Color Selection"),
             textInput("gap_color", "Gap color", value = "#ed3833"),
             textInput("other_color", "Other color", value = "#b3dceb"),
@@ -50,25 +71,34 @@ ui <- fluidPage(
             tabPanel("Gap to the Living Income Benchmark - Bar Graphs",
                 tabsetPanel(type = "tabs",
                         tabPanel("Absolute Mean",           
-                                 plotOutput("abMeanBarGraph")),
-                        tabPanel("Relative Mean",
-                                 plotOutput("relMeanBarGraph")),
-                        tabPanel("Absolute Median",
-                                 plotOutput("abMedianBarGraph")),
-                        tabPanel("Relative Median",
-                                 plotOutput("relMedianBarGraph"))
+                                 plotOutput("abMeanBarGraph"))
+                        # tabPanel("Relative Mean",
+                        #          plotOutput("relMeanBarGraph")),
+                        # tabPanel("Absolute Median",
+                        #          plotOutput("abMedianBarGraph")),
+                        # tabPanel("Relative Median",
+                        #          plotOutput("relMedianBarGraph"))
                         )
                         
-                ),
+                )
             
-            tabPanel("Distribution Graphs"),
-            tabPanel("Foster–Greer–Thorbecke (FGT) index")
+            # tabPanel("Distribution Graphs",
+            #     tabsetPanel(type = "tabs",
+            #                  tabPanel("By Type",           
+            #                           plotOutput("typeDisGraph")),
+            #                  tabPanel("With Mean and Median",
+            #                            plotOutput("mDisGraph")),
+            #                 )
+            #          ),
+            #     
+            # tabPanel("Foster–Greer–Thorbecke (FGT) index",
+            #          plotOutput("FGTGraph"))
     )
 )
 )
 )
 
-# Define server logic required to draw a histogram
+################### Server ###################
 server <- function(input, output, session) {
     
     reactive_data <- reactive({
@@ -77,7 +107,7 @@ server <- function(input, output, session) {
         return(data)
     })
     
-    output$barGraph <- renderPlot({
+    output$abMeanBarGraph <- renderPlot({
         
         data <- reactive_data()
 
