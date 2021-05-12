@@ -21,6 +21,7 @@ options(shiny.maxRequestSize = 30*1024^2)
 
 ################### UI ###################
 ui <- fluidPage(
+    
 
     # Application title
     titlePanel("Living Income Graph Generator"),
@@ -50,9 +51,21 @@ ui <- fluidPage(
     textInput("main_crop", "Name of main crop", placeholder = "e.g: cocoa"),
     textInput("currency", "Currency", placeholder = "eg: USD"),
     
-    h3("Font Selection"),
-    selectInput("font", "Select font for graphs", choices = c("AndaleMono", "AppleMyungjo", "Arial-Black", "Arial-BoldItalicMT")),
+    # This extends the font drop down above the navegation bar
+    tags$div(tags$style(HTML( ".selectize-dropdown, .selectize-dropdown.form-control{z-index:10000;}"))),
     
+    h3("Font Selection"),
+    selectInput("font", "Select graph font", list('Arial' = list("Arial-Black", "Arial-BoldItalicMT", "Arial-BoldMT", "Arial-ItalicMT"),
+                                                       'Arial Narrow' = list("ArialNarrow", "ArialNarrow-Bold", "ArialNarrow-BoldItalic", "ArialNarrow-Italic"),
+                                                       'Times New Roman' = list("TimesNewRomanPS-BoldItalicMT","TimesNewRomanPS-BoldMT", "TimesNewRomanPS-ItalicMT", "TimesNewRomanPSMT"),
+                                                       'Courier' = list("CourierNewPS-BoldItalicMT", "CourierNewPS-BoldMT", "CourierNewPS-ItalicMT", "CourierNewPSMT"),  
+                                                       'Verdana' = list("Verdana", "Verdana-Bold", "Verdana-BoldItalic", "Verdana-Italic"), 
+                                                       'Georgia' = list("Georgia", "Georgia-Bold", "Georgia-BoldItalic", "Georgia-Italic"),
+                                                       'Trebuchet' = list("Trebuchet-BoldItalic", "TrebuchetMS", "TrebuchetMS-Bold", "TrebuchetMS-Italic"), 
+                                                       'Other' = list("BodoniSvtyTwoSCITCTT-Book", "ArialRoundedMTBold", "ArialUnicodeMS", "Bradley-Hand-Bold", "BrushScriptMT", "DINCondensed-Bold")
+                                                   )),                   
+                   
+                                                              
     navbarPage(" ",
                tabPanel("Gap to the Living Income Benchmark - Bar Graphs",
                         sidebarLayout(
@@ -204,7 +217,7 @@ server <- function(input, output, session) {
            content = function(file) {
                device <- function(..., width, height) {
                    grDevices::png(..., width = width, height = height,
-                                  res = 2000, units = "in")
+                                  res = 1500, units = "in")
                }
                ggsave(file, plot = plot, device = device)
                
