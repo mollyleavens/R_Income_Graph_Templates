@@ -25,37 +25,68 @@ ui <- fluidPage(
     # Application title
     titlePanel("Living Income Graph Generator"),
     
-    textOutput("Add app description here"),
+    p("Add app description here"),
     
-    # Sidebar  
-    sidebarLayout(
-        # File upload # Just CSV for now, but could expand to others 
-        sidebarPanel(
-        
-        h3("File Upload"),    
-        p("If your original data file is saved as an Excel, export
+    h3("File Upload"),    
+    p("If your original data file is saved as an Excel, export
                     it as a CSV file (from Excel, 'save as') before importing it
                     here. Ensure the top row of the Excel/CSV is only column names"),
-                
-            fileInput("file", "Choose .csv File",
-                      multiple = FALSE,
-                      accept = c(".csv")),
-        
-        h3("Select Variables"), 
-        
-        p("After uploading your data file above, the dropdown menus for 
+    
+    fileInput("file", "Choose .csv File",
+              multiple = FALSE,
+              accept = c(".csv")),
+    
+    h3("Select Variables"), 
+    
+    p("After uploading your data file above, the dropdown menus for 
                    variable section will autopopulate. Select the column name 
                    from your data set that corresponds to each variable."),   
-        
-            selectInput("total_hh_income", "Total income", choices = NULL),
-            selectInput("income_main_crop", "Income from main crop", choices = NULL),
-        
-        h3("Enter Graph Labels"),         
-            # Replace graph labels
-            textInput("main_crop", "Name of main crop", placeholder = "e.g: cocoa"),
-            textInput("currency", "Currency", placeholder = "eg: USD"),
+    
+    selectInput("total_hh_income", "Total income", choices = NULL),
+    selectInput("income_main_crop", "Income from main crop", choices = NULL),
+    
+    h3("Enter Graph Labels"),         
+    # Replace graph labels
+    textInput("main_crop", "Name of main crop", placeholder = "e.g: cocoa"),
+    textInput("currency", "Currency", placeholder = "eg: USD"),
+    
+    h3("Font Selection"),
+    selectInput("font", "Select font for graphs", choices = c("AndaleMono", "AppleMyungjo", "Arial-Black", "Arial-BoldItalicMT")),
+    
+    navbarPage(" ",
+               tabPanel("Gap to the Living Income Benchmark - Bar Graphs",
+                        sidebarLayout(
+                        mainPanel(
+                                  tabsetPanel(type = "tabs",
+                                              tabPanel("Absolute Mean",           
+                                                       plotOutput("abMeanBarGraph"),
+                                                      
+                                                       downloadButton('foo'))
+                                              # tabPanel("Relative Mean",
+                                              #          plotOutput("relMeanBarGraph")),
+                                              # tabPanel("Absolute Median",
+                                              #          plotOutput("abMedianBarGraph")),
+                                              # tabPanel("Relative Median",
+                                              #          plotOutput("relMedianBarGraph"))
+                                              )
+                                 ),
+                         
+                         # tabPanel("Distribution Graphs",
+                         #     tabsetPanel(type = "tabs",
+                         #                  tabPanel("By Type",           
+                         #                           plotOutput("typeDisGraph")),
+                         #                  tabPanel("With Mean and Median",
+                         #                            plotOutput("mDisGraph")),
+                         #                 )
+                         #          ),
+                         #     
+                         # tabPanel("Foster–Greer–Thorbecke (FGT) index",
+                         #          plotOutput("FGTGraph"))
+    
+    # Sidebar  
+                        sidebarPanel(
             
-        p("Replacing the default graph colors below is optional, but may be 
+                    p("Replacing the default graph colors below is optional, but may be 
                     helpful in matching the graphs to reports/presentations. 
                     You have two options for entering colors into the boxes below. 
                     1) List on of the 657 built-in colors recognized by this app. 
@@ -65,49 +96,16 @@ ui <- fluidPage(
         h3("Color Selection"),
             textInput("gap_color", "Gap color", value = "#ed3833"),
             textInput("other_color", "Other color", value = "#b3dceb"),
-            textInput("main_color", "Main color", value = "#b3b3fa"),
-        
-        h3("Font Selection"),
-        selectInput("font", " ", choices = c(fontdf$FontName))
+            textInput("main_color", "Main color", value = "#b3b3fa")
+    
      
-        
-        #actionButton("goButton", "Generate Plot", class = "btn-success"),
-        
-        ),
 
-        # Show a plot of the generated distribution
-        mainPanel(navbarPage(" ",
-            
-            tabPanel("Gap to the Living Income Benchmark - Bar Graphs",
-                tabsetPanel(type = "tabs",
-                        tabPanel("Absolute Mean",           
-                                 plotOutput("abMeanBarGraph"))
-                        # tabPanel("Relative Mean",
-                        #          plotOutput("relMeanBarGraph")),
-                        # tabPanel("Absolute Median",
-                        #          plotOutput("abMedianBarGraph")),
-                        # tabPanel("Relative Median",
-                        #          plotOutput("relMedianBarGraph"))
-                        )
-                        
-                )
-            
-            # tabPanel("Distribution Graphs",
-            #     tabsetPanel(type = "tabs",
-            #                  tabPanel("By Type",           
-            #                           plotOutput("typeDisGraph")),
-            #                  tabPanel("With Mean and Median",
-            #                            plotOutput("mDisGraph")),
-            #                 )
-            #          ),
-            #     
-            # tabPanel("Foster–Greer–Thorbecke (FGT) index",
-            #          plotOutput("FGTGraph"))
-    )
+        )
 )
-)
+               )   
 )
 
+)
 ################### Server ###################
 server <- function(input, output, session) {
     
@@ -197,10 +195,23 @@ server <- function(input, output, session) {
             # Add incomes to prospective graph components  
             geom_text(aes(label = round(Income)), 
                       position = position_stack(vjust = 0.5), 
-                      size = 3) 
+                      size = 3)
        
-     print(plot)
+       print(plot)
+
+       output$foo = downloadHandler(
+           filename = 'Graph.png',
+           content = function(file) {
+               device <- function(..., width, height) {
+                   grDevices::png(..., width = width, height = height,
+                                  res = 2000, units = "in")
+               }
+               ggsave(file, plot = plot, device = device)
+               
+     
     })
+    
+    }) 
 }
 
 # Run the application 
