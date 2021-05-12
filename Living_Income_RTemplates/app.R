@@ -10,7 +10,11 @@ library(rsconnect)
 library(shiny)
 library(knitr)
 library(scales)
+library(extrafont)
 library(tidyverse)
+
+#font_import()
+fontdf <- as.data.frame.matrix(fonttable())
 
 # Increase the Max upload size for user file upload from the default
 options(shiny.maxRequestSize = 30*1024^2)
@@ -27,7 +31,8 @@ ui <- fluidPage(
     sidebarLayout(
         # File upload # Just CSV for now, but could expand to others 
         sidebarPanel(
-            
+        
+        h3("File Upload"),    
         p("If your original data file is saved as an Excel, export
                     it as a CSV file (from Excel, 'save as') before importing it
                     here. Ensure the top row of the Excel/CSV is only column names"),
@@ -36,11 +41,12 @@ ui <- fluidPage(
                       multiple = FALSE,
                       accept = c(".csv")),
         
+        h3("Select Variables"), 
+        
         p("After uploading your data file above, the dropdown menus for 
                    variable section will autopopulate. Select the column name 
                    from your data set that corresponds to each variable."),   
         
-        h3("Select Variables"), 
             selectInput("total_hh_income", "Total income", choices = NULL),
             selectInput("income_main_crop", "Income from main crop", choices = NULL),
         
@@ -60,6 +66,10 @@ ui <- fluidPage(
             textInput("gap_color", "Gap color", value = "#ed3833"),
             textInput("other_color", "Other color", value = "#b3dceb"),
             textInput("main_color", "Main color", value = "#b3b3fa"),
+        
+        h3("Font Selection"),
+        selectInput("font", " ", choices = c(fontdf$FontName))
+     
         
         #actionButton("goButton", "Generate Plot", class = "btn-success"),
         
@@ -105,9 +115,13 @@ server <- function(input, output, session) {
         print(input$file$datapath)
         data <- read_csv(input$file$datapath)
         return(data)
+        
     })
     
     output$abMeanBarGraph <- renderPlot({
+        
+        f <- input$font
+        theme_set(theme_get() + theme(text = element_text(family = f)))
         
         data <- reactive_data()
 

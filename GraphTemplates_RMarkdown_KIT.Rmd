@@ -269,7 +269,8 @@ font_import()
   # Type Y, then enter and the function should run.
 
 # Step 3: Output table with all available fonts.
-fonttable()  
+fonttable()
+
 
 # Step 4: Select your desired font
 # Ensure you paste the 'FontName' as listed in the front table printed in step 3
