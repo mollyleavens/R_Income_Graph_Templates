@@ -63,7 +63,10 @@ ui <- fluidPage(
                                                        'Georgia' = list("Georgia", "Georgia-Bold", "Georgia-BoldItalic", "Georgia-Italic"),
                                                        'Trebuchet' = list("Trebuchet-BoldItalic", "TrebuchetMS", "TrebuchetMS-Bold", "TrebuchetMS-Italic"), 
                                                        'Other' = list("BodoniSvtyTwoSCITCTT-Book", "ArialRoundedMTBold", "ArialUnicodeMS", "Bradley-Hand-Bold", "BrushScriptMT", "DINCondensed-Bold")
-                                                   )),                   
+                                                   ),
+                ),
+    
+    actionButton("plotButton", "Generate Plot", class = "btn-success"),
                    
                                                               
     navbarPage(" ",
@@ -71,9 +74,8 @@ ui <- fluidPage(
                         sidebarLayout(
                         mainPanel(
                                   tabsetPanel(type = "tabs",
-                                              tabPanel("Absolute Mean",           
+                                              tabPanel("Absolute Mean", 
                                                        plotOutput("abMeanBarGraph"),
-                                                      
                                                        downloadButton('foo'))
                                               # tabPanel("Relative Mean",
                                               #          plotOutput("relMeanBarGraph")),
@@ -127,8 +129,21 @@ server <- function(input, output, session) {
         data <- read_csv(input$file$datapath)
         return(data)
         
+       })
+    
+    observe({
+        
+    updateSelectInput(session, "total_hh_income",
+                          choices = colnames(data),
+                          selected = input$total_hh_income) # this keeps the input on the last thing selected on tab-change
+    
+    updateSelectInput(session, "income_main_crop",
+                      choices = colnames(data),
+                      selected = input$income_main_crop) # this keeps the input on the last thing selected on tab-change
     })
     
+    observeEvent(input$plotButton, {
+        
     output$abMeanBarGraph <- renderPlot({
         
         f <- input$font
@@ -136,16 +151,6 @@ server <- function(input, output, session) {
         
         data <- reactive_data()
 
-        updateSelectInput(session, "total_hh_income",
-                          choices = colnames(data),
-                          selected = input$total_hh_income) # this keeps the input on the last thing selected on tab-change
-        
-        updateSelectInput(session, "income_main_crop",
-                          choices = colnames(data),
-                          selected = input$income_main_crop) # this keeps the input on the last thing selected on tab-change
-        
-        #input$goButton
-        
         main_crop <- input$main_crop
         currency <- input$currency
         gap_color <- input$gap_color
@@ -209,7 +214,7 @@ server <- function(input, output, session) {
             geom_text(aes(label = round(Income)), 
                       position = position_stack(vjust = 0.5), 
                       size = 3)
-       
+
        print(plot)
 
        output$foo = downloadHandler(
@@ -220,10 +225,9 @@ server <- function(input, output, session) {
                                   res = 1500, units = "in")
                }
                ggsave(file, plot = plot, device = device)
-               
-     
-    })
+           })   
     
+    })
     }) 
 }
 

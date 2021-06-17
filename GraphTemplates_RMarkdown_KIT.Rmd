@@ -158,58 +158,20 @@ currency <- "USD"
 
 # Graph aesthetics changes 
 
-The following code chunk allows the user to define graph colors and fonts. 
+The following two code chunks allow the user to define graph colors and fonts respectively. These functionalities are helpful in matching the graphs to company/organization specific reports and presentations. 
 
-OPTIONAL
-
-This is helpful in matching the graphs to reports/presentations.  
-
-If you would like R to assign default colors....
+These two code sections are OPTIONAL. If you would like to leave the graph colors as they are in the example graphs, no need to alter the following code chunk.  
 
 ## Colors 
 ```{r}
-####################### Colors #######################
+# You can communicate colors with R in two ways: through one of the 657 color names build into R, or through a hex color code. 
 
-# To see the names of all 657 the built-in colors, use colors()
-http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+# To see the names of all 657 colors built into R, run the colors() formula in the command line. 
+# The below links to a PDF file with a color sample for all 657 built in colors  
+# http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
 
-## Bar graph sections
-# Gap to the mean
-gap_color <- 
-# Other income
-other_color <-   
-# Income from main crop
-main_color <- 
-# Value of crops consumed at home
-home_color <- 
-  
-## Share of observations below the Living Income Benchmark
-# Note: these bars all appear the same color
-share_color <- 
-  
-## Distributional plots
-  
-## By household type
-# Group 1
-color_1 <- 
-# Group 2
-color_2 <- 
-# Group 3
-color_3 <- 
+# You can replace any of the below colors with a new color name or hex color code.  
 
-## With mean and median
-# Distribution curve 
-curve_color <-   
-# Income Mean
-mean_color <-   
-# Income Median
-median_color <-  
-# Living Income Benchmark 
-benchmark_color <-   
-```
-
-### Default colors 
-```{r}
 ## Bar graph sections
 # Gap to the mean
 gap_color <- "#ed3833"
@@ -247,11 +209,11 @@ benchmark_color <- "red"
 
 ## Fonts
 
-Set the font in this code chunk that you would like for all of the following graphs and data tables.
+Set the font in this code chunk that you would like for all outputted graphs and data tables.
 
-If you do not set the font, the R default font, which is Arial. 
+If you do not set the font, it will remain as Arial, the R default font.
 
-```{r}
+```{r, eval = FALSE}
 # If you have previously imported fonts in R, you can skip steps 1 and 2.
 
 # Step 1: Load extrafont library
@@ -268,7 +230,6 @@ font_import()
 # Step 3: Output table with all available fonts.
 fonttable()
 
-
 # Step 4: Select your desired font
 # Ensure you paste the 'FontName' as listed in the front table printed in step 3
   # There should not be any spaces in the same pasted below
@@ -278,7 +239,6 @@ font <- "PASTE THE NAME OF DESIRED FONT HERE." # e.g.: "CourierNewPSMT"
 theme_set(theme_get() + theme(text = element_text(family = font)))
 
 ```
-
 
 
 # The gap of the mean income to the Living Income Benchmark - bar chart
