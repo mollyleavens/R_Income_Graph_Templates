@@ -171,6 +171,9 @@ If you would like to leave the graph colors as they are in the example graphs, s
 
 # You can replace any of the below colors with a new color name or hex color code.  
 
+## Font color
+theme_set(theme_gray(base_size = 15))
+
 ## Bar graph sections
 # Gap to the mean
 gap_color <- "#ed3833"
@@ -237,14 +240,27 @@ font <- "PASTE THE NAME OF DESIRED FONT HERE." # e.g.: "CourierNewPSMT"
 # Step 5: Set default to your selected font.
 theme_set(theme_get() + theme(text = element_text(family = font)))
 
+# When running your graph code, if you get the following error: "polygon edge not found"
+
+theme_set(theme_get() + theme(text = element_text(family = "Arial")))
+
 ```
 
 ## Bar Placement 
 
+The below code chunk allows you to define the order in which the groups - gender, household size, or other grouping variable - appear from left to right on the bar graphs.   
+
 ```{r}
+## Replace the writing currently in all caps with 
 
+
+## Example dataset
+df <- df %>% 
+      mutate(grouping = factor(grouping, 
+                               levels = c("Male-headed, typical", 
+                                       "Male-headed, large", 
+                                       "Female-headed")))
 ```
-
 
 \newpage
 
@@ -334,7 +350,7 @@ df %>%
 # Label the graph title, axis, and caption  
   labs(title = "Mean values in relation to the benchmark value", 
        y = "% of the benchmark value",
-       x = "",
+       x = " ",
 # Add caption with observation numbers for each household type            
        caption = paste("Based on: \n", 
                    paste(names(table(df$grouping)), 
