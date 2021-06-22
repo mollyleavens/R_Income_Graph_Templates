@@ -173,6 +173,8 @@ If you would like to leave the graph colors as they are in the example graphs, s
 
 ## Font color
 theme_set(theme_gray(base_size = 15))
+theme_set(theme_get() + theme(text = element_text(color = "pink")))
+
 
 ## Bar graph sections
 # Gap to the mean
@@ -242,7 +244,6 @@ theme_set(theme_get() + theme(text = element_text(family = font)))
 
 # When running your graph code, if you get the following error: "polygon edge not found"
 
-theme_set(theme_get() + theme(text = element_text(family = "Arial")))
 
 ```
 
@@ -252,7 +253,6 @@ The below code chunk allows you to define the order in which the groups - gender
 
 ```{r}
 ## Replace the writing currently in all caps with 
-
 
 ## Example dataset
 df <- df %>% 
@@ -845,3 +845,39 @@ df %>%
             position = position_stack(vjust = 0.5), 
             size = 3) 
 ```
+
+
+
+```{r}
+ p1 <- ggplot(mtcars) +
+geom_point(aes(x = wt, y = mpg, colour = gear)) +
+labs(
+title = "Fuel economy declines as weight increases",
+subtitle = "(1973-74)",
+caption = "Data from the 1974 Motor Trend US magazine.",
+tag = "Figure 1",
+x = "Weight (1000 lbs)",
+y = "Fuel economy (mpg)",
+colour = "Gears"
+)
+
+p1 + theme_gray() # the default
+The signature ggplot2 theme with a grey background and white gridlines,
+#' designed to put the data forward yet make comparisons easy.
+p1 + theme_bw()
+The classic dark-on-light ggplot2 theme. May work better for presentations
+#' displayed with a projector.
+p1 + theme_linedraw()
+A theme with only black lines of various widths on white backgrounds,
+#' reminiscent of a line drawing. Serves a purpose similar to `theme_bw()`.
+#' Note that this theme has some very thin lines 
+p1 + theme_light()
+A theme similar to `theme_linedraw()` but with light grey lines and axes,
+#' to direct more attention towards the data.
+p1 + theme_dark()
+The dark cousin of `theme_light()`, with similar line sizes but a dark background. Useful to make thin coloured lines pop out.
+p1 + theme_minimal()
+p1 + theme_classic()
+p1 + theme_void()
+```
+
