@@ -1,7 +1,7 @@
 ---
 title: "R Graph Templates for Visualizing Living Income"
 author: "Molly Leavens on behalf of the Sustainable Food Lab"
-date: "5/7/2021"
+date: "Last updated 6/17/2021"
 output:  
   pdf_document:
     toc: yes
@@ -9,9 +9,6 @@ output:
     toc: yes
 urlcolor: blue    
 ---
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
 
 ```{r, echo=FALSE, fig.align='center'}
 # Add Sustainable Food Lab logo 
@@ -42,15 +39,14 @@ if(is_latex_output()) {
 
 * The sample data set assigns different Living Income benchmarks to different household types. No changes to the code are necessary if your data only has one benchmark for all household types or genders.  
 
-* **To run your own data through the code provided below, it is imperative that you format your data in exactly the same structure as the sample data set. See the KIT Excel format [HERE](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn) to copy the exact column names for each key variable. If you alter any column names in your data file, you will need to update this code accordingly. Ensure that you format all numerical variables without any commas or currency notations.**
-
 # Troubleshooting
 If you are encountering challenges and/or errors when running this code, try these five initial troubleshooting: 
+
 1. Check your 'working directory' and ensure it is the same file destination as where you have saved your data file CSV. A working directory error would occur when trying to upload the data file in the setup.  
 
 2. Ensure all the required libraries are installed on your computer. If you have never used the tidyverse, knitr, or scales libraries, you will need to individually install them first with the function install.packages("LIBRARY NAME").
 
-3. Ensure your data file formatting aligns exactly with the sample excel. The column names must be exactly the same without additional spaces or formatting. Ensure that you format all numerical variables without any commas or currency notations and any blank values are assigned NA.
+3. Ensure that you format all numerical variables without any commas or currency notations and any blank values are assigned NA.
 
 4. Check for extreme data outliers. Very large, small, or negative income calculations will result in skewed visualizations and could even lead to errors when running the code.
 
@@ -69,10 +65,12 @@ knitr::opts_chunk$set(message = FALSE)
 <p>&nbsp;</p>
 
 ```{r, echo=TRUE}
-#### Before continuing any further, load the R libraries that have the necessary functions for this analysis. 
+#### Before continuing any further, load the R libraries that have the 
+# necessary functions for this analysis. 
 
 # If you have not previously used these libraries, 
-# you will need to instaLl them with the function install.packages("LIBRARY NAME"). For example: install.packages(tidyverse)
+# you will need to instaLl them with the function install.packages("LIBRARY NAME").
+# For example: install.packages(tidyverse)
 library(tidyverse)
 library(knitr)
 library(scales)
@@ -80,11 +78,11 @@ library(scales)
 
 \newpage
 
-# User entered data
+# User-entered data
 
 This section allows the user to enter the information specific to their dataset. The user should replace all the wording in ALL CAPS in the following code chunk.   
 
-ALLINGING THE VARIBLE NAMES IS CRITICAL. 
+**For the graph code to function, it is imperative that you write the variable names below exactly as they appear in your data's CSV file.**
 
 When replacing the capitalized sections, retain the quotation marks. In other words, write your replacement within the quotation marks as this signals to R that you are not referencing an object that already exists.   
 
@@ -114,10 +112,10 @@ names(df) <- make.names(names(df), unique=TRUE)
 ####################### Replace variable names #######################
 # In the below section, replace the words in all caps with the column   
   # name present in your dataframe.
-# NOTE: Ensure that you write the column names exactly as they appear in your
+# Note: Ensure that you write the column names exactly as they appear in your
   # data's current dataframe. The make.names() function executed above may have
-  # altered some of the column names to enable R compatibility. Run names(df)
-  # for a list of your dataset's current column names.   
+  # altered some of the column names to enable R compatibility. 
+  # Run names(df) for a list of your dataset's current column names.   
 
 # Income from main crop
 df$income_main_crop <- df$"VARIABLE NAME" 
@@ -158,11 +156,12 @@ currency <- "USD"
 
 # Graph aesthetics changes 
 
-The following two code chunks allow the user to define graph colors and fonts respectively. These functionalities are helpful in matching the graphs to company/organization specific reports and presentations. 
-
-These two code sections are OPTIONAL. If you would like to leave the graph colors as they are in the example graphs, no need to alter the following code chunk.  
+The following three code chunks allow the user to define graph colors, fonts and bar placement, respectively. These functionalities are helpful in matching the graphs to company/organization specific reports and presentations. 
 
 ## Colors 
+
+If you would like to leave the graph colors as they are in the example graphs, simply run the following code chunk without making any alterations. Note: As the code chunk for each graph template references the color names assigned in the below color code chunk, **the graph code will result in an error if you do not run the color chunk first**. You only need to run the color chunk once per session as R will save the assigned colors in the working environment.   
+
 ```{r}
 # You can communicate colors with R in two ways: through one of the 657 color names build into R, or through a hex color code. 
 
@@ -209,9 +208,9 @@ benchmark_color <- "red"
 
 ## Fonts
 
-Set the font in this code chunk that you would like for all outputted graphs and data tables.
+The following font code chunk is **optional** and allows you to update the font for all ensuing graphs and data tables.
 
-If you do not set the font, it will remain as Arial, the R default font.
+If you would like the graph and data table font to remain as Arial, the R default font, do not run the below code. If you would like to update the font, follow the steps outlined below and ensure to replace the single line of all caps.
 
 ```{r, eval = FALSE}
 # If you have previously imported fonts in R, you can skip steps 1 and 2.
@@ -240,6 +239,14 @@ theme_set(theme_get() + theme(text = element_text(family = font)))
 
 ```
 
+## Bar Placement 
+
+```{r}
+
+```
+
+
+\newpage
 
 # The gap of the mean income to the Living Income Benchmark - bar chart
 
@@ -335,7 +342,8 @@ df %>%
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend  
-  scale_fill_discrete(breaks=c("Gap",
+  scale_fill_manual(values=c(gap_color, other_color, main_color),
+                      breaks=c("Gap",
                                 "Other",
                                 "main_crop"),
                       labels=c("Gap to the Living Income Benchmark",
@@ -666,7 +674,7 @@ df %>%
 * The KIT Guidance Document displays this graph style as a smooth histogram with binned income ranges. However, for a variety of reasons, we felt that the data would be better visualized with a density graph, so that is what the below code outputs.
 
 ## By household type
-```{r,}
+```{r,eval = FALSE}
 # This code drafts a dataframe of the percent above the LI benchmark for each group
 # THIS WILL BE USEd...
 below <- 
@@ -689,15 +697,15 @@ df %>%
 ### Add vertical lines for Living Income benchmark(s)
 # Add and/or subtract lines based on number of household types
 # and if you have a different benchmark for each.
-  print(paste(geom_vline(aes(xintercept = unique(df$grouping)[i], 
+  paste(as.character(geom_vline(aes(xintercept = unique(df$grouping)[i], 
                  color = below[i]),
-             key_glyph = "path"), "+" ))
+             key_glyph = "path")), "+" )
   }
     +
   scale_color_manual(name = "Legend", 
                      values = c(paste("Living Income 90% below" = color_1,
                                 "Living Income Male-headed, typical: 91% below"= color_2,
-                                "Living Income Male-headed, large: 59% below"= color_3)) + 
+                                "Living Income Male-headed, large: 59% below"= color_3))) + 
 # Add graph and axis labels
   labs(x = paste("Estimated Total Household Income (", 
                  currency, "/year/household)", sep = ""),
@@ -751,8 +759,8 @@ df %>%
   geom_vline(aes(xintercept = median(df$total_hh_income), 
                  color = "Income Median"), key_glyph = "path") +
   # Add graph and axis labels
-  labs(x = paste("Estimated Total", household, "Income (", 
-                 currency, "/", "year/household", 
+  labs(x = paste("Estimated Total Household Income (", 
+                 currency, "/", "year/household)", 
                  collapse = ''),
        y = "Proportion of households",
 # Add caption with observation numbers for each household type             
@@ -819,54 +827,5 @@ df %>%
 # Add percents to each graph bar   
   geom_text(aes(label = label_percent(accuracy = 1L)(FGT)),
             position = position_stack(vjust = 0.5), 
-            size = 3)) 
-```
-
-
-## With mean and median
-```{r,}
-df %>%
-  # Set x-axis to key variable
-  ggplot(aes(x = total_hh_income)) +
-  # Add density line. You can change the fill and line colors.
-  geom_smooth(color = "#add8e6", fill = "#add8e6") +
-  # Add vertical line for living income
-  geom_vline(aes(xintercept = mean(benchmark), 
-                 color = "Living Income Benchmark"), key_glyph = "path") +
-  # Add vertical line for mean income 
-  geom_vline(aes(xintercept = mean(df$total_hh_income), 
-                 color = "Income Mean"), key_glyph = "path") +
-  # Add vertical line for median income
-  geom_vline(aes(xintercept = median(df$total_hh_income), 
-                 color = "Income Median"), key_glyph = "path") +
-  # Add graph and axis labels
-  labs(x = paste("Estimated Total", household, "Income (", 
-                 currency, "/year/household", 
-                 collapse = ''),
-       y = "Proportion of households",
-# Add caption with observation numbers for each household type             
-       caption = paste("N =", nrow(df), ", bin size = ", 
-                       "BINSIZE", collapse = '')) +
-  # Format x-axis labels as numbers with commas
-  # If your data has extreme income outliers, 
-    # you may need to filter them or add x-axis limits so they do not warp the graph 
-  scale_x_continuous(labels = comma) +
-  # Remove y-axis labels and ticks
-  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-  # Remove background grid (the grid is the default)
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-  # Move the legend to the bottom of the graph
-        legend.position="bottom",
-  # Remove legend title
-        legend.title = element_blank(),
-  # Remove gray background for legend symbols 
-        legend.key=element_rect(fill=NA),
-  # Put a box around the legend
-        legend.box.background = element_rect(),
-  # Move caption to desired location
-        plot.caption = element_text(hjust = 0)) +
-  # Manually add legend 
-  scale_color_manual(values = c("Living Income Benchmark"= "red",
-                                "Income Mean"= "blue",
-                                "Income Median"="green"))
+            size = 3) 
 ```
