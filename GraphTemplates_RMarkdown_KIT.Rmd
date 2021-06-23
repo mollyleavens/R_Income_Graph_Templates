@@ -171,11 +171,6 @@ If you would like to leave the graph colors as they are in the example graphs, s
 
 # You can replace any of the below colors with a new color name or hex color code.  
 
-## Font color
-theme_set(theme_gray(base_size = 15))
-theme_set(theme_get() + theme(text = element_text(color = "pink")))
-
-
 ## Bar graph sections
 # Gap to the mean
 gap_color <- "#ed3833"
@@ -208,7 +203,14 @@ mean_color <- "blue"
 # Income Median
 median_color <-  "green"
 # Living Income Benchmark 
-benchmark_color <- "red"   
+benchmark_color <- "red"  
+
+################# Font color
+# To change the color of the font for all graph axis and labels, replace the color 
+# in the quotation marks, then run the following two lines of code. 
+font_color <- "black"
+theme_set(theme_get() + theme(text = element_text(color = font_color)))
+
 ```
 
 ## Fonts
@@ -247,20 +249,40 @@ theme_set(theme_get() + theme(text = element_text(family = font)))
 
 ```
 
-## Bar Placement 
+## Bar Placement (variable releveling)
 
-The below code chunk allows you to define the order in which the groups - gender, household size, or other grouping variable - appear from left to right on the bar graphs.   
+The below code chunk is **optional**. It allows you to define the order in which the groups - gender, household size, or other grouping variable - appear from left to right on the bar graphs.   
 
 ```{r}
-## Replace the writing currently in all caps with 
+# In the example dataset, there are three groups that income is assessed across:
+  # Male-headed, typical; Male-headed, large; and Female-headed.
+# The below code assigns Male-headed, typical as the far left bar on graphs,
+  # Male-headed, large in the middle, and Female-headed on the far right. 
 
-## Example dataset
+# To customize this chunk of code to your dataset, replace the example group 
+  # names with the group names in your dataset - leaving the quotation marks and 
+  # commas as they are. The order of the list below determines the order of the 
+  # bars in the ensuing bar graph. 
+ 
 df <- df %>% 
       mutate(grouping = factor(grouping, 
                                levels = c("Male-headed, typical", 
                                        "Male-headed, large", 
                                        "Female-headed")))
 ```
+
+## Other aestetics
+
+```{r}
+THEMES: HORIZONTAL GRID LINES? YES, NO. 
+
+LIGHT GRAY OR WHITE BACKGROUND?
+
+## Example dataset
+  
+```
+
+
 
 \newpage
 
@@ -846,38 +868,4 @@ df %>%
             size = 3) 
 ```
 
-
-
-```{r}
- p1 <- ggplot(mtcars) +
-geom_point(aes(x = wt, y = mpg, colour = gear)) +
-labs(
-title = "Fuel economy declines as weight increases",
-subtitle = "(1973-74)",
-caption = "Data from the 1974 Motor Trend US magazine.",
-tag = "Figure 1",
-x = "Weight (1000 lbs)",
-y = "Fuel economy (mpg)",
-colour = "Gears"
-)
-
-p1 + theme_gray() # the default
-The signature ggplot2 theme with a grey background and white gridlines,
-#' designed to put the data forward yet make comparisons easy.
-p1 + theme_bw()
-The classic dark-on-light ggplot2 theme. May work better for presentations
-#' displayed with a projector.
-p1 + theme_linedraw()
-A theme with only black lines of various widths on white backgrounds,
-#' reminiscent of a line drawing. Serves a purpose similar to `theme_bw()`.
-#' Note that this theme has some very thin lines 
-p1 + theme_light()
-A theme similar to `theme_linedraw()` but with light grey lines and axes,
-#' to direct more attention towards the data.
-p1 + theme_dark()
-The dark cousin of `theme_light()`, with similar line sizes but a dark background. Useful to make thin coloured lines pop out.
-p1 + theme_minimal()
-p1 + theme_classic()
-p1 + theme_void()
-```
 
