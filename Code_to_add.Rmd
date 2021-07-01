@@ -41,3 +41,15 @@ p1 + theme_classic()
 #A classic-looking theme, with x and y axis lines and no gridlines
 
 ```
+
+## Other aestetics
+
+```{r}
+THEMES: HORIZONTAL GRID LINES? YES, NO. 
+
+LIGHT GRAY OR WHITE BACKGROUND?
+
+## Example dataset
+  
+  
+```

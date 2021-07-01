@@ -11,10 +11,6 @@ urlcolor: blue
 ---
 
 ```{r, echo=FALSE, fig.align='center'}
-# Add Sustainable Food Lab logo 
-library(knitr)
-include_graphics("food-lab-logo-85px.png")
-
 # Add hook so there is a space after each code chunk before each graphic
 if(is_latex_output()) {
   plot_default <- knit_hooks$get("plot")
@@ -75,8 +71,6 @@ library(tidyverse)
 library(knitr)
 library(scales)
 ```
-
-\newpage
 
 # User-entered data
 
@@ -163,7 +157,8 @@ The following three code chunks allow the user to define graph colors, fonts and
 If you would like to leave the graph colors as they are in the example graphs, simply run the following code chunk without making any alterations. Note: As the code chunk for each graph template references the color names assigned in the below color code chunk, **the graph code will result in an error if you do not run the color chunk first**. You only need to run the color chunk once per session as R will save the assigned colors in the working environment.   
 
 ```{r}
-# You can communicate colors with R in two ways: through one of the 657 color names build into R, or through a hex color code. 
+# You can communicate colors with R in two ways: through one of the 657 color 
+# names build into R, or through a hex color code. 
 
 # To see the names of all 657 colors built into R, run the colors() formula in the command line. 
 # The below links to a PDF file with a color sample for all 657 built in colors  
@@ -270,19 +265,6 @@ df <- df %>%
                                        "Male-headed, large", 
                                        "Female-headed")))
 ```
-
-## Other aestetics
-
-```{r}
-THEMES: HORIZONTAL GRID LINES? YES, NO. 
-
-LIGHT GRAY OR WHITE BACKGROUND?
-
-## Example dataset
-  
-```
-
-
 
 \newpage
 
@@ -709,18 +691,21 @@ df %>%
 
 # Share of those below the Living Income Benchmark - distributional plot 
 
-* The KIT Guidance Document displays this graph style as a smooth histogram with binned income ranges. However, for a variety of reasons, we felt that the data would be better visualized with a density graph, so that is what the below code outputs.
-
 ## By household type
+
+Note: the binsize is automatically the data range (or data maximum if there is )
 ```{r,eval = FALSE}
 # This code drafts a dataframe of the percent above the LI benchmark for each group
-# THIS WILL BE USEd...
+# The character strings in the dataframe are then used as descriptive comments 
+  # within the graph
 below <- 
   df %>%
   group_by(grouping) %>% 
   summarise(Percent = percent(sum(total_hh_income < benchmark)/n()))
- 
-below <- paste(below$grouping, ": ", below$Percent, " below", sep = "")
+
+# Formatting the strings as phrases with punctuation   
+below <- paste("Living Income", below$grouping, ": ", 
+               below$Percent, " below", sep = "")
   
 df %>%
 # Set x-axis to total household income
@@ -730,16 +715,16 @@ df %>%
 # Add density line. You can change the fill and line colors.
   geom_density(alpha = 0.9, color = "grey") +
   
-  for (i in 1:length(unique(df$grouping))) {
-  
-### Add vertical lines for Living Income benchmark(s)
-# Add and/or subtract lines based on number of household types
-# and if you have a different benchmark for each.
-  paste(as.character(geom_vline(aes(xintercept = unique(df$grouping)[i], 
-                 color = below[i]),
-             key_glyph = "path")), "+" )
-  }
-    +
+#   for (i in 1:length(unique(df$grouping))) {
+#   
+# ### Add vertical lines for Living Income benchmark(s)
+# # Add and/or subtract lines based on number of household types
+# # and if you have a different benchmark for each.
+#   paste(as.character(geom_vline(aes(xintercept = unique(df$grouping)[i], 
+#                  color = below[i]),
+#              key_glyph = "path")), "+" )
+#   }
+#     +
   scale_color_manual(name = "Legend", 
                      values = c(paste("Living Income 90% below" = color_1,
                                 "Living Income Male-headed, typical: 91% below"= color_2,
