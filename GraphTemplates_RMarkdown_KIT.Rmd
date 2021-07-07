@@ -689,11 +689,10 @@ df %>%
 
 \newpage
 
-# Share of those below the Living Income Benchmark - distributional plot 
+# Share of those below the Living Income Benchmark - density plot 
 
 ## By household type
 
-Note: the binsize is automatically the data range (or data maximum if there is )
 ```{r,eval = FALSE}
 # This code drafts a dataframe of the percent above the LI benchmark for each group
 # The character strings in the dataframe are then used as descriptive comments 
@@ -769,9 +768,9 @@ df %>%
 ```{r,}
 df %>%
   # Set x-axis to key variable
-  ggplot(aes(x = total_hh_income)) +
+  ggplot(aes(x = total_hh_income, y =(..count..)/n), fill = dataset) +
   # Add density line. You can change the fill and line colors.
-  geom_density(color = "#add8e6", fill = "#add8e6") +
+  geom_density(color = "#add8e6", fill = "#add8e6", bw=8000) +
   # Add vertical line for living income
   geom_vline(aes(xintercept = mean(benchmark), 
                  color = "Living Income Benchmark"), key_glyph = "path") +
@@ -784,7 +783,7 @@ df %>%
   # Add graph and axis labels
   labs(x = paste("Estimated Total Household Income (", 
                  currency, "/", "year/household)", 
-                 collapse = ''),
+                 sep = ""),
        y = "Proportion of households",
 # Add caption with observation numbers for each household type             
        caption = paste("N =", nrow(df), ", bin size = ", 
@@ -793,8 +792,9 @@ df %>%
   # If your data has extreme income outliers, 
     # you may need to filter them or add x-axis limits so they do not warp the graph 
   scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = percent) +
   # Remove y-axis labels and ticks
-  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+  theme(#axis.text.y = element_blank(), axis.ticks.y = element_blank(),
   # Remove background grid (the grid is the default)
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
   # Move the legend to the bottom of the graph
