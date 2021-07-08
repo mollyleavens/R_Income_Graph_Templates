@@ -184,11 +184,25 @@ share_color <- "#ed3833"
   
 ## By household type
 # Group 1
-color_1 <- "#c1dfc1"
+color_1 <- "#b6dce8"
 # Group 2
-color_2 <- "#b6dce8"
+color_2 <- "#c2c1fa"
 # Group 3
-color_3 <- "#c2c1fa"
+color_3 <- "#c1dfc1"
+
+color_4 <- "magenta"
+
+test_pallet <- c(color_1, color_2, color_3, color_4)
+
+scale_color_drsimonj <- function(palette = test_pallet, discrete = TRUE, reverse = FALSE, ...) {
+  pal <- drsimonj_pal(palette = palette, reverse = reverse)
+
+  if (discrete) {
+    discrete_scale("colour", paste0("drsimonj_", palette), palette = pal, ...)
+  } else {
+    scale_color_gradientn(colours = pal(256), ...)
+  }
+}
 
 ## With mean and median
 # Distribution curve 
@@ -690,6 +704,132 @@ df %>%
 \newpage
 
 # Share of those below the Living Income Benchmark - density plot 
+
+## By household type
+
+```{r,eval = FALSE}
+##### These first few lines of code draft a dataframe of the percent above the 
+  # LI benchmark for each group. The character strings in this dataframe are 
+  # then used as descriptive comments within the following graph
+below <- 
+  df %>%
+  group_by(grouping) %>% 
+  summarise(Percent = percent(sum(total_hh_income < benchmark)/n()))
+
+# Formatting the strings as phrases with punctuation   
+below <- paste("Living Income", below$grouping, ": ", 
+               below$Percent, " below", sep = "")
+
+##### Graph code begins here  
+df %>%
+# Set x-axis to total household income and color by household type  
+  ggplot(aes(x = total_hh_income)) +
+# Add density line. You can change the fill and line colors.
+  geom_density(aes(fill = grouping), alpha = 0.9, color = "grey") +
+  
+#   for (i in 1:length(unique(df$grouping))) {
+#   
+# ### Add vertical lines for Living Income benchmark(s)
+# # Add and/or subtract lines based on number of household types
+# # and if you have a different benchmark for each.
+#   paste(as.character(geom_vline(aes(xintercept = unique(df$grouping)[i], 
+#                  color = below[i]),
+#              key_glyph = "path")), "+" )
+#   }
+#     +
+  scale_fill_manual(name = "Legend", 
+                    values = c(color_1, color_2, color_3, color_4),
+                    breaks = levels(df$grouping),
+                    labels = levels(df$grouping)) + 
+# Add graph and axis labels
+  labs(x = paste("Estimated Total Household Income (", 
+                 currency, "/year/household)", sep = ""),
+       y = "Income Probability",
+# Add caption with observation numbers for each household type               
+       caption = paste("Based on: \n", 
+                   paste(names(table(df$grouping)), 
+                       ":", 
+                       as.numeric(table(df$grouping)), 
+                       "observations \n ", collapse = ''), collapse = '')) +
+# Format x-axis labels as numbers with commas
+# If your data has extreme income outliers, 
+    # you may need to filter them or add x-axis limits so they do not warp the graph 
+  scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
+# Remove y-axis labels and ticks
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), 
+# Remove background grid (the grid is the default)
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+# Move the legend to the bottom of the graph
+        legend.position="bottom",
+# Remove legend title
+        legend.title = element_blank(),
+# Remove gray background for legend symbols 
+        legend.key=element_rect(fill=NA),
+# Put a box around the legend
+        legend.box.background = element_rect(),
+# Move caption to desired location
+        plot.caption = element_text(hjust = 0),
+
+  panel.background = element_rect(fill = "white", colour = NA)) +
+# Wrap legend onto 3 lines to fit everything neatly     
+  guides(color = guide_legend(nrow = 3)) +
+  geom_density(color = "dark blue") 
+
+```
+\newpage
+
+## With mean and median
+```{r,}
+df %>%
+  # Set x-axis to key variable
+  ggplot(aes(x = total_hh_income, y =(..count..)/n), fill = dataset) +
+  # Add density line. You can change the fill and line colors.
+  geom_density(color = "#add8e6", fill = "#add8e6", bw=8000) +
+  # Add vertical line for living income
+  geom_vline(aes(xintercept = mean(benchmark), 
+                 color = "Living Income Benchmark"), key_glyph = "path") +
+  # Add vertical line for mean income 
+  geom_vline(aes(xintercept = mean(df$total_hh_income), 
+                 color = "Income Mean"), key_glyph = "path") +
+  # Add vertical line for median income
+  geom_vline(aes(xintercept = median(df$total_hh_income), 
+                 color = "Income Median"), key_glyph = "path") +
+  # Add graph and axis labels
+  labs(x = paste("Estimated Total Household Income (", 
+                 currency, "/", "year/household)", 
+                 sep = ""),
+       y = "Proportion of households",
+# Add caption with observation numbers for each household type             
+       caption = paste("N =", nrow(df), ", bin size = ", 
+                       "BINSIZE", collapse = '')) +
+  # Format x-axis labels as numbers with commas
+  # If your data has extreme income outliers, 
+    # you may need to filter them or add x-axis limits so they do not warp the graph 
+  scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = percent) +
+  # Remove y-axis labels and ticks
+  theme(#axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+  # Remove background grid (the grid is the default)
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  # Move the legend to the bottom of the graph
+        legend.position="bottom",
+  # Remove legend title
+        legend.title = element_blank(),
+  # Remove gray background for legend symbols 
+        legend.key=element_rect(fill=NA),
+  # Put a box around the legend
+        legend.box.background = element_rect(),
+  # Move caption to desired location
+        plot.caption = element_text(hjust = 0)) +
+  # Manually add legend 
+  scale_color_manual(values = c("Living Income Benchmark"= "red",
+                                "Income Mean"= "blue",
+                                "Income Median"="green"))
+```
+
+\newpage
+
+# Share of those below the Living Income Benchmark - histogram 
 
 ## By household type
 
