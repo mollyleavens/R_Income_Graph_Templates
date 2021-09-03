@@ -1,7 +1,7 @@
 ---
 title: "R Graph Templates for Visualizing Living Income"
 author: "Molly Leavens on behalf of the Sustainable Food Lab"
-date: "Last updated 6/17/2021"
+date: "Last updated 9/2/2021"
 output:  
   pdf_document:
     toc: yes
@@ -9,17 +9,6 @@ output:
     toc: yes
 urlcolor: blue    
 ---
-
-```{r, echo=FALSE, fig.align='center'}
-# Add hook so there is a space after each code chunk before each graphic
-if(is_latex_output()) {
-  plot_default <- knit_hooks$get("plot")
-  knit_hooks$set(plot = function(x, options) { 
-    x <- c("\\vspace{25pt}", plot_default(x, options))
-  })
-}
-```
-
 
 \newpage
 
