@@ -100,16 +100,14 @@ names(df) <- make.names(names(df), unique=TRUE)
   # altered some of the column names to enable R compatibility. 
   # Run names(df) for a list of your dataset's current column names.   
 
-# Income from main crop
+## Income from main crop
 df$income_main_crop <- df$"VARIABLE NAME" 
-# Income from all other sources
-df$other_income <- df$"VARIABLE NAME"
-# Total HH income
-  # If you do not already have a named variable for total income, you can 
+## Total HH income
+  # If your data set does not already have a named variable for total income, you can 
   # instead assign the following line of code to total_hh_income:
-  # df$income_main_crop + df$other_income
-total_hh_income <- "TOTAL HH INCOME"
-# Groups to compare incomes between
+  # df$income_main_crop + df$"OTHER INCOME VARIABLE NAME"
+df$total_hh_income <- df$"VARIABLE NAME"
+## Groups to compare incomes between
   # e.g: gender, household size, farm type, etc.  
 df$grouping <- df$"VARIABLE NAME"
 
@@ -127,15 +125,18 @@ df <- read_csv("KIT_Sample_Data.csv")
 ## Replace variable names
 # Main crop
 df$income_main_crop <- df$total_cocoa_income_2018
-# Other income
-# df$other_income <- df$
 # Total income
 df$total_hh_income <- df$total_hh_income_2018
+# Groups to compare incomes between
+  # Note: name does not change from example data set
+df$grouping <- df$grouping
 
 # Replace graph labels
 main_crop <-"cocoa" 
 currency <- "USD"
 ```
+
+\newpage
 
 # Graph aesthetics changes 
 
