@@ -536,7 +536,7 @@ df %>%
             Food = median(food_value),
             main_crop = median(income_main_crop),
             benchmark = median(benchmark)) %>% 
-  mutate(Other = (benchmark - Gap - main_crop)) %>%
+  mutate(Other = (benchmark - Gap - main_crop - Food)) %>%
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", c(Gap, Food, main_crop, Other)) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
@@ -599,12 +599,12 @@ df %>%
 # For each household type, summarize the median gap to the living income,
 # the median other income, and the median main_crop income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
-  summarise(Gap = median((benchmark - total_hh_income)/benchmark),
+  summarise(Gap = median((benchmark - total_hh_income - food_value)/benchmark),
             Food = median(food_value/benchmark),
-            Other = median((total_hh_income - income_main_crop)/benchmark),
             main_crop = median(income_main_crop/benchmark)) %>% 
+  mutate(Other = (1 - Gap - main_crop - Food)) %>%
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:main_crop) %>% 
+  gather(key = "Component", value = "Income", Gap:Other) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Food", "Other", "main_crop"))) %>% 
@@ -699,7 +699,7 @@ df %>%
 
 ## By household type
 
-```{r,eval = FALSE}
+```{r}
 ##### These first few lines of code draft a dataframe of the percent above the 
   # LI benchmark for each group. The character strings in this dataframe are 
   # then used as descriptive comments within the following graph
@@ -772,11 +772,16 @@ df %>%
 
 ## With mean and median
 ```{r,}
+### Preparing text for label with percent below benchmark
+#  <- sum(below_benchmark) - 
+# "below the benchmark"
+
 df %>%
   # Set x-axis to key variable
   ggplot(aes(x = total_hh_income, y =(..count..)/n), fill = dataset) +
   # Add density line. You can change the fill and line colors.
-  geom_density(color = "#add8e6", fill = "#add8e6", bw=8000) +
+  geom_density(color = "#add8e6", fill = "#add8e6") +
+  
   # Add vertical line for living income
   geom_vline(aes(xintercept = mean(benchmark), 
                  color = "Living Income Benchmark"), key_glyph = "path") +
@@ -786,21 +791,24 @@ df %>%
   # Add vertical line for median income
   geom_vline(aes(xintercept = median(df$total_hh_income), 
                  color = "Income Median"), key_glyph = "path") +
+  # Add text for percentage below the benchmark 
+  geom_text(mapping=aes(x=mean(benchmark), y=0, 
+            label=paste((percent(sum(below_benchmark)/nrow(df))), "below the benchmark")), 
+            size=4, vjust=-0.4, hjust=0) +
   # Add graph and axis labels
   labs(x = paste("Estimated Total Household Income (", 
                  currency, "/", "year/household)", 
                  sep = ""),
-       y = "Proportion of households",
+       y = "Income Probability",
 # Add caption with observation numbers for each household type             
-       caption = paste("N =", nrow(df), ", bin size = ", 
-                       "BINSIZE", collapse = '')) +
+       caption = paste("N =", nrow(df))) +
   # Format x-axis labels as numbers with commas
   # If your data has extreme income outliers, 
     # you may need to filter them or add x-axis limits so they do not warp the graph 
-  scale_x_continuous(labels = comma) +
+  scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
   scale_y_continuous(labels = percent) +
   # Remove y-axis labels and ticks
-  theme(#axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
   # Remove background grid (the grid is the default)
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
   # Move the legend to the bottom of the graph
