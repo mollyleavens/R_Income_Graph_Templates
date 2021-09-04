@@ -470,10 +470,10 @@ df %>%
 # the median other income, and the median main_crop income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
   summarise(Gap = median((benchmark - total_hh_income)/benchmark),
-            Other = median((total_hh_income - income_main_crop)/benchmark),
-            main_crop = median(income_main_crop/benchmark)) %>% 
+            main_crop = median((income_main_crop/benchmark)))%>%
+  mutate(Other = (1 - Gap - main_crop)) %>%
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:main_crop) %>% 
+  gather(key = "Component", value = "Income", Gap:Other) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Other", "main_crop"))) %>% 
@@ -532,12 +532,13 @@ df %>%
   group_by(grouping) %>% 
 # For each grouping, summarize the median gap to the living income, 
 # the median other income, and the median main_crop income. 
-  summarise(Gap = median(benchmark - total_hh_income),
-            Other = median(total_hh_income - income_main_crop),
+  summarise(Gap = median(benchmark - total_hh_income - food_value),
             Food = median(food_value),
-            main_crop = median(income_main_crop)) %>% 
+            main_crop = median(income_main_crop),
+            benchmark = median(benchmark)) %>% 
+  mutate(Other = (benchmark - Gap - main_crop)) %>%
 # Gather each income components into one column so the data is in 'long' format
-  gather(key = "Component", value = "Income", Gap:main_crop) %>% 
+  gather(key = "Component", value = "Income", c(Gap, Food, main_crop, Other)) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
                             levels = c("Gap", "Food", "Other", "main_crop"))) %>% 
