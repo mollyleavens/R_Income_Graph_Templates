@@ -170,17 +170,19 @@ home_color <- "#fad8b3"
 # Note: these bars all appear the same color
 share_color <- "#ed3833"
   
-## Distributional plots
+##### Distributional plots
   
 ## By household type
 # Group 1
-color_1 <- "#b6dce8"
+color_1 <- "#8ec68e" #8ec68e green
 # Group 2
-color_2 <- "#c2c1fa"
+color_2 <- "#8e8df8"  #8e8df8 purple
 # Group 3
-color_3 <- "#c1dfc1"
+color_3 <- "#8bcae0"  #8bcae0 blue 
 
 color_4 <- "magenta"
+
+color_all <- "dark blue"
 
 test_pallet <- c(color_1, color_2, color_3, color_4)
 
@@ -703,22 +705,31 @@ df %>%
 ##### These first few lines of code draft a dataframe of the percent above the 
   # LI benchmark for each group. The character strings in this dataframe are 
   # then used as descriptive comments within the following graph
-below <- 
-  df %>%
-  group_by(grouping) %>% 
-  summarise(Percent = percent(sum(total_hh_income < benchmark)/n()))
 
-# Formatting the strings as phrases with punctuation   
-below <- paste("Living Income", below$grouping, ": ", 
-               below$Percent, " below", sep = "")
+
+# below <- 
+#   df %>%
+#   group_by(grouping) %>% 
+#   summarise(Percent = percent(sum(total_hh_income < benchmark)/n()))
+# 
+# # Formatting the strings as phrases with punctuation   
+# below <- paste("Living Income", below$grouping, ": ", 
+#                below$Percent, " below", sep = "")
+
+# Create a blank variable to allow for manual legend mapping of the summary curve
+df$filler <- "filler"
 
 ##### Graph code begins here  
-df %>%
+ggplot(df) +
 # Set x-axis to total household income and color by household type  
-  ggplot(aes(x = total_hh_income)) +
-# Add density line. You can change the fill and line colors.
-  geom_density(aes(fill = grouping), alpha = 0.9, color = "grey") +
+  geom_density(aes(x = total_hh_income, color = grouping, fill = grouping), alpha = 0.7) +
+  geom_density(aes(x = total_hh_income, alpha = filler), color = color_all) +
+
+  scale_alpha_manual(name = "Legend", values = 1, labels = "All") +
   
+# Add density line
+# remove lines so just the fill is visible so median line can also appear
+
 #   for (i in 1:length(unique(df$grouping))) {
 #   
 # ### Add vertical lines for Living Income benchmark(s)
@@ -729,10 +740,17 @@ df %>%
 #              key_glyph = "path")), "+" )
 #   }
 #     +
-  scale_fill_manual(name = "Legend", 
+
+  scale_fill_manual(name = "Legend",
                     values = c(color_1, color_2, color_3, color_4),
-                    breaks = levels(df$grouping),
-                    labels = levels(df$grouping)) + 
+                    breaks = c(unique(df$grouping)),
+                    labels = c(unique(df$grouping))) +
+  
+  scale_color_manual(name = "Legend",
+                    values = c(color_1, color_2, color_3, color_4),
+                    breaks = c(unique(df$grouping)),
+                    labels = c(unique(df$grouping))) +
+  
 # Add graph and axis labels
   labs(x = paste("Estimated Total Household Income (", 
                  currency, "/year/household)", sep = ""),
@@ -756,7 +774,8 @@ df %>%
 # Remove legend title
         legend.title = element_blank(),
 # Remove gray background for legend symbols 
-        legend.key=element_rect(fill=NA),
+        #legend.key=element_rect(color=NA),
+        legend.key=element_blank(),
 # Put a box around the legend
         legend.box.background = element_rect(),
 # Move caption to desired location
@@ -764,8 +783,8 @@ df %>%
 
   panel.background = element_rect(fill = "white", colour = NA)) +
 # Wrap legend onto 3 lines to fit everything neatly     
-  guides(color = guide_legend(nrow = 3)) +
-  geom_density(color = "dark blue") 
+  #guides(color = guide_legend(nrow = 3)) +
+  guides(fill = guide_legend(override.aes = list(color = "white")))
 
 ```
 \newpage
