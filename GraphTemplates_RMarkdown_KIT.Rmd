@@ -109,6 +109,9 @@ df$income_main_crop <- df$"VARIABLE NAME"
   # df$income_main_crop + df$"OTHER INCOME VARIABLE NAME"
 df$total_hh_income <- df$"VARIABLE NAME"
 
+## Value of food produced at home
+df$food_value <- df$"VARIABLE NAME"
+
 ## Groups to compare incomes between
   # e.g: gender, household size, farm type, etc.  
 df$grouping <- df$"VARIABLE NAME"
@@ -135,11 +138,11 @@ df <- read_csv("KIT_Sample_Data.csv")
 df$income_main_crop <- df$total_cocoa_income_2018
 # Total income
 df$total_hh_income <- df$total_hh_income_2018
-# Groups to compare incomes between
-  # Note: name does not change from example data set
+# Value of food produced at home (name does not change in example data set)
+df$food_value <- df$food_value 
+# Groups to compare incomes between (name does not change in example data set)
 df$grouping <- df$grouping
-# Living income benchmark
-  # Note: name does not change from example data set
+# Living income benchmark (name does not change in example data set)
 df$benchmark <- df$benchmark
 
 ## Replace graph labels
@@ -156,13 +159,18 @@ Note: These summary values are already calculated in the uploaded example data s
 
 # Create a yes/no binary for if the farmer is above the benchmark.
   # 1 is yes, 0 is no
-df$below_benchmark <- ifelse(df$total_hh_income > df$benchmark, 0, 1)
-  
-# Calculate the fgt 
-df$fgt_gap <- 
+df$below_benchmark <- 
+  ifelse(df$total_hh_income > df$benchmark, 0, 1)
 
-# Calculate the fgt with food  
-fgt_gap_with_food
+# Create below benchmark binary with value of food produced at home included   
+df$below_benchmark_with_food <- 
+  ifelse((df$total_hh_income + df$food_value) > df$benchmark, 0, 1)
+
+# Calculate the Foster–Greer–Thorbecke (FGT) gap 
+df$fgt_gap <- 
+  
+# Calculate the FGT with value of food produced at home included
+fgt_gap_with_food <-
 ```
 
 
