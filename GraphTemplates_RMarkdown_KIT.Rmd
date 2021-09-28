@@ -156,7 +156,7 @@ If you would like to leave the graph colors as they are in the example graphs, s
 
 # You can replace any of the below colors with a new color name or hex color code.  
 
-## Bar graph sections
+###### Bar graph sections ######
 # Gap to the mean
 gap_color <- "#ed3833"
 # Other income
@@ -170,31 +170,19 @@ home_color <- "#fad8b3"
 # Note: these bars all appear the same color
 share_color <- "#ed3833"
   
-##### Distributional plots
+###### Distributional plots ######
   
 ## By household type
 # Group 1
-color_1 <- "#8ec68e" #8ec68e green
+color_1 <- "#8ec68e" # green
 # Group 2
-color_2 <- "#8e8df8"  #8e8df8 purple
+color_2 <- "#8e8df8"  # purple
 # Group 3
-color_3 <- "#8bcae0"  #8bcae0 blue 
-
-color_4 <- "magenta"
-
+color_3 <- "#8bcae0"  # blue 
+# Group 4
+color_4 <- "magenta"  # note: sample data only has 3 groups
+# Summary line for all groups
 color_all <- "dark blue"
-
-test_pallet <- c(color_1, color_2, color_3, color_4)
-
-scale_color_drsimonj <- function(palette = test_pallet, discrete = TRUE, reverse = FALSE, ...) {
-  pal <- drsimonj_pal(palette = palette, reverse = reverse)
-
-  if (discrete) {
-    discrete_scale("colour", paste0("drsimonj_", palette), palette = pal, ...)
-  } else {
-    scale_color_gradientn(colours = pal(256), ...)
-  }
-}
 
 ## With mean and median
 # Distribution curve 
@@ -723,12 +711,9 @@ df$filler <- "filler"
 ggplot(df) +
 # Set x-axis to total household income and color by household type  
   geom_density(aes(x = total_hh_income, color = grouping, fill = grouping), alpha = 0.7) +
+  # Add summary line for all household types
   geom_density(aes(x = total_hh_income, alpha = filler), color = color_all) +
-
   scale_alpha_manual(name = "Legend", values = 1, labels = "All") +
-  
-# Add density line
-# remove lines so just the fill is visible so median line can also appear
 
 #   for (i in 1:length(unique(df$grouping))) {
 #   
@@ -741,15 +726,16 @@ ggplot(df) +
 #   }
 #     +
 
+# Add custom colors
   scale_fill_manual(name = "Legend",
                     values = c(color_1, color_2, color_3, color_4),
-                    breaks = c(unique(df$grouping)),
-                    labels = c(unique(df$grouping))) +
+                    breaks = c(levels(df$grouping)),
+                    labels = c(levels(df$grouping))) +
   
   scale_color_manual(name = "Legend",
                     values = c(color_1, color_2, color_3, color_4),
-                    breaks = c(unique(df$grouping)),
-                    labels = c(unique(df$grouping))) +
+                    breaks = c(levels(df$grouping)),
+                    labels = c(levels(df$grouping))) +
   
 # Add graph and axis labels
   labs(x = paste("Estimated Total Household Income (", 
@@ -774,16 +760,16 @@ ggplot(df) +
 # Remove legend title
         legend.title = element_blank(),
 # Remove gray background for legend symbols 
-        #legend.key=element_rect(color=NA),
-        legend.key=element_blank(),
+        legend.key=element_rect(color=NA),
+        # legend.key=element_blank(),
 # Put a box around the legend
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0),
-
-  panel.background = element_rect(fill = "white", colour = NA)) +
+# Make graph background white
+        panel.background = element_rect(fill = "white", colour = NA)) + 
 # Wrap legend onto 3 lines to fit everything neatly     
-  #guides(color = guide_legend(nrow = 3)) +
+  guides(color = guide_legend(nrow = 3)) +
   guides(fill = guide_legend(override.aes = list(color = "white")))
 
 ```
