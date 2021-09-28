@@ -149,12 +149,20 @@ currency <- "USD"
 
 # Variable calculations
 
-The following code chunk calculates new summary variables from 
+The following code chunk calculates new summary variables from columns that already exist within the data set
+
+Note: These summary values are already calculated in the uploaded example data set. 
 ```{r}
 
-#
-below_benchmark <- 
+# Create a yes/no binary for if the farmer is above the benchmark.
+  # 1 is yes, 0 is no
+df$below_benchmark <- ifelse(df$total_hh_income > df$benchmark, 0, 1)
   
+# Calculate the fgt 
+df$fgt_gap <- 
+
+# Calculate the fgt with food  
+fgt_gap_with_food
 ```
 
 
@@ -1018,4 +1026,43 @@ df %>%
             size = 3) 
 ```
 
+# Foster–Greer–Thorbecke (FGT) index with food
+
+```{r,}
+df %>% 
+# Group by household type  
+  group_by(grouping) %>% 
+# For each grouping, calculate the average Foster–Greer–Thorbecke (FGT) index 
+  summarise(FGT = mean(fgt_gap_with_food)) %>% 
+# Generate ggplot graph for percentage by grouping 
+  ggplot(aes(x = grouping, y = FGT)) +
+# Assign graph as bar graph and color bars red for aesthetics   
+  geom_col(fill= "red") +
+# Label the graph title, axis, and caption    
+  labs(title = "FGT index",
+       subtitle = "Value of food produced at home included",
+       y = "Index value",
+       x = "",
+# Add caption with observation numbers for each household type               
+       caption = paste("Based on: \n", 
+                   paste(names(table(df$grouping)), 
+                       ":", 
+                       as.numeric(table(df$grouping)), 
+                       "observations \n ", collapse = ''), collapse = '')) +
+# Format y-axis labels with a percent  
+  scale_y_continuous(labels = percent) +
+# Remove x-axis grid lines and tick marks    
+  theme(panel.grid.major.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank(),
+# Center plot title and subtitle        
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+# Move caption to desired location
+        plot.caption = element_text(hjust = 0)) +
+# Add percents to each graph bar   
+  geom_text(aes(label = label_percent(accuracy = 1L)(FGT)),
+            position = position_stack(vjust = 0.5), 
+            size = 3) 
+```
 
