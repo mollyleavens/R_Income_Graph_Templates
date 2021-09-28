@@ -541,6 +541,46 @@ df %>%
 
 \newpage
 
+# Share of those below the Living Income benchmark - bar chart
+
+```{r,}
+df %>% 
+# Group by household type  
+  group_by(grouping) %>% 
+# For each household type, calculate the percentage above the living income benchmark 
+  summarise(Below = sum(below_benchmark)/n()) %>% 
+# Generate ggplot graph for percentage by grouping 
+  ggplot(aes(x = grouping, y = Below)) +
+# Assign graph as bar graph and color bars red for aesthetics   
+  geom_col(fill= share_color) +
+# Label the graph title, axis, and caption    
+  labs(title = "Share of observations below the Living Income Benchmark",
+       y = "Proportion of households",
+       x = "",
+# Add caption with observation numbers for each household type    
+       caption = paste("Based on: \n", 
+                   paste(names(table(df$grouping)), 
+                       ":", 
+                       as.numeric(table(df$grouping)), 
+                       "observations \n ", collapse = ''), collapse = '')) +
+# Format y-axis labels with a percent  
+  scale_y_continuous(labels = percent) +
+# Remove x-axis grid lines and tick marks    
+  theme(panel.grid.major.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank(),
+# Center plot title          
+        plot.title = element_text(hjust = 0.5),
+# Move caption to desired location
+        plot.caption = element_text(hjust = 0)) +
+# Add percents to each graph bar   
+  geom_text(aes(label = label_percent(accuracy = 1L)(Below)),
+            position = position_stack(vjust = 0.5), 
+            size = 3) 
+```
+
+\newpage
+
 # Bar charts including the intrinsic value of food produced and consumed at home
 
 ## The gap of the absolute median income to the Living Income Benchmark - bar chart
@@ -675,20 +715,21 @@ df %>%
 
 \newpage
 
-# Share of those below the Living Income benchmark - bar chart
+## Share of those below the Living Income benchmark - bar chart
 
 ```{r,}
 df %>% 
 # Group by household type  
   group_by(grouping) %>% 
 # For each household type, calculate the percentage above the living income benchmark 
-  summarise(Below = sum(below_benchmark)/n()) %>% 
+  summarise(Below = sum(below_benchmark_with_food)/n()) %>% 
 # Generate ggplot graph for percentage by grouping 
   ggplot(aes(x = grouping, y = Below)) +
 # Assign graph as bar graph and color bars red for aesthetics   
   geom_col(fill= share_color) +
 # Label the graph title, axis, and caption    
   labs(title = "Share of observations below the Living Income Benchmark",
+       subtitle = "Value of food produced at home included",
        y = "Proportion of households",
        x = "",
 # Add caption with observation numbers for each household type    
@@ -705,6 +746,7 @@ df %>%
         axis.title.x = element_blank(),
 # Center plot title          
         plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
 # Add percents to each graph bar   
