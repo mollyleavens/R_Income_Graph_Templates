@@ -63,13 +63,13 @@ library(scales)
 
 # User-entered data
 
-This section allows the user to enter the information specific to their dataset. The user should replace all the wording in ALL CAPS in the following code chunk.   
+This section allows the user to enter the information specific to their data set. The user should replace all the wording in ALL CAPS in the following code chunk.   
 
 **For the graph code to function, it is imperative that you write the variable names below exactly as they appear in your data's CSV file.**
 
 When replacing the capitalized sections, retain the quotation marks. In other words, write your replacement within the quotation marks as this signals to R that you are not referencing an object that already exists.   
 
-For an example of how to fill in the following code chunk, see the following code chunk for the example dataset. 
+For an example of how to fill in the following code chunk, see the following code chunk for the example data set. 
 
 ```{r,eval=FALSE, include=TRUE}
 ####################### Import data set #######################
@@ -98,18 +98,26 @@ names(df) <- make.names(names(df), unique=TRUE)
 # Note: Ensure that you write the column names exactly as they appear in your
   # data's current dataframe. The make.names() function executed above may have
   # altered some of the column names to enable R compatibility. 
-  # Run names(df) for a list of your dataset's current column names.   
+  # Run names(df) for a list of your data set's current column names.   
 
 ## Income from main crop
 df$income_main_crop <- df$"VARIABLE NAME" 
+
 ## Total HH income
   # If your data set does not already have a named variable for total income, you can 
   # instead assign the following line of code to total_hh_income:
   # df$income_main_crop + df$"OTHER INCOME VARIABLE NAME"
 df$total_hh_income <- df$"VARIABLE NAME"
+
 ## Groups to compare incomes between
   # e.g: gender, household size, farm type, etc.  
 df$grouping <- df$"VARIABLE NAME"
+
+## Living income benchmark
+  # Note: if your data set does not already have a benchmark column AND 
+  # the benchmark is the name value for all farmers, you can assign a number 
+  # to the column and all farmers will receive that number
+df$benchmark <- df$"VARIABLE NAME" -or- BENCHMARK NUMBER (e.g 2000)
 
 ####################### Replace graph labels #######################
 main_crop <- "NAME OF MAIN CROP" # e.g: "cocoa" 
@@ -117,7 +125,7 @@ currency <- "CURRENCY OF INCOME DATA" # e.g: "USD"
 
 ```
 
-## Example dataset 
+## Example data set 
 ```{r}
 ## Import data set
 df <- read_csv("KIT_Sample_Data.csv")
@@ -130,11 +138,25 @@ df$total_hh_income <- df$total_hh_income_2018
 # Groups to compare incomes between
   # Note: name does not change from example data set
 df$grouping <- df$grouping
+# Living income benchmark
+  # Note: name does not change from example data set
+df$benchmark <- df$benchmark
 
-# Replace graph labels
+## Replace graph labels
 main_crop <-"cocoa" 
 currency <- "USD"
 ```
+
+# Variable calculations
+
+The following code chunk calculates new summary variables from 
+```{r}
+
+#
+below_benchmark <- 
+  
+```
+
 
 \newpage
 
@@ -243,13 +265,13 @@ theme_set(theme_get() + theme(text = element_text(family = font)))
 The below code chunk is **optional**. It allows you to define the order in which the groups - gender, household size, or other grouping variable - appear from left to right on the bar graphs.   
 
 ```{r}
-# In the example dataset, there are three groups that income is assessed across:
+# In the example data set, there are three groups that income is assessed across:
   # Male-headed, typical; Male-headed, large; and Female-headed.
 # The below code assigns Male-headed, typical as the far left bar on graphs,
   # Male-headed, large in the middle, and Female-headed on the far right. 
 
-# To customize this chunk of code to your dataset, replace the example group 
-  # names with the group names in your dataset - leaving the quotation marks and 
+# To customize this chunk of code to your data set, replace the example group 
+  # names with the group names in your data set - leaving the quotation marks and 
   # commas as they are. The order of the list below determines the order of the 
   # bars in the ensuing bar graph. 
  
@@ -841,14 +863,14 @@ df %>%
 # This code drafts a dataframe of the percent above the LI benchmark for each group
 # The character strings in the dataframe are then used as descriptive comments 
   # within the graph
-below <- 
-  df %>%
-  group_by(grouping) %>% 
-  summarise(Percent = percent(sum(total_hh_income < benchmark)/n()))
-
-# Formatting the strings as phrases with punctuation   
-below <- paste("Living Income", below$grouping, ": ", 
-               below$Percent, " below", sep = "")
+# below <- 
+#   df %>%
+#   group_by(grouping) %>% 
+#   summarise(Percent = percent(sum(total_hh_income < benchmark)/n()))
+# 
+# # Formatting the strings as phrases with punctuation   
+# below <- paste("Living Income", below$grouping, ": ", 
+#                below$Percent, " below", sep = "")
   
 df %>%
 # Set x-axis to total household income
@@ -856,7 +878,7 @@ df %>%
 # Color by household type            
              fill = grouping)) +
 # Add density line. You can change the fill and line colors.
-  geom_density(alpha = 0.9, color = "grey") +
+  geom_histogram(alpha = 0.7, binwidth = 100) +
   
 #   for (i in 1:length(unique(df$grouping))) {
 #   
@@ -912,9 +934,9 @@ df %>%
 ```{r,}
 df %>%
   # Set x-axis to key variable
-  ggplot(aes(x = total_hh_income, y =(..count..)/n), fill = dataset) +
+  ggplot(aes(x = total_hh_income, fill = dataset)) +
   # Add density line. You can change the fill and line colors.
-  geom_density(color = "#add8e6", fill = "#add8e6", bw=8000) +
+  geom_histogram(color = "#add8e6", fill = "#add8e6") +
   # Add vertical line for living income
   geom_vline(aes(xintercept = mean(benchmark), 
                  color = "Living Income Benchmark"), key_glyph = "path") +
@@ -928,15 +950,14 @@ df %>%
   labs(x = paste("Estimated Total Household Income (", 
                  currency, "/", "year/household)", 
                  sep = ""),
-       y = "Proportion of households",
+       y = "Number of households",
 # Add caption with observation numbers for each household type             
-       caption = paste("N =", nrow(df), ", bin size = ", 
-                       "BINSIZE", collapse = '')) +
+       caption = paste("N =", nrow(df), ", bin width = ", 
+                       round(max(df$total_hh_income)/30), currency, collapse = '')) +
   # Format x-axis labels as numbers with commas
   # If your data has extreme income outliers, 
     # you may need to filter them or add x-axis limits so they do not warp the graph 
   scale_x_continuous(labels = comma) +
-  scale_y_continuous(labels = percent) +
   # Remove y-axis labels and ticks
   theme(#axis.text.y = element_blank(), axis.ticks.y = element_blank(),
   # Remove background grid (the grid is the default)
