@@ -167,10 +167,10 @@ df$below_benchmark_with_food <-
   ifelse((df$total_hh_income + df$food_value) > df$benchmark, 0, 1)
 
 # Calculate the Foster–Greer–Thorbecke (FGT) gap 
-df$fgt_gap <- 
+df$fgt_gap <- pmax((df$benchmark - df$total_hh_income), 0)/df$benchmark
   
 # Calculate the FGT with value of food produced at home included
-fgt_gap_with_food <-
+fgt_gap_with_food <- pmax((df$benchmark - (df$total_hh_income + df$food_value)), 0)/df$benchmark
 ```
 
 
@@ -820,7 +820,7 @@ ggplot(df) +
 # Add graph and axis labels
   labs(x = paste("Estimated Total Household Income (", 
                  currency, "/year/household)", sep = ""),
-       y = "Income Probability",
+       y = "Income Likelihood",
 # Add caption with observation numbers for each household type               
        caption = paste("Based on: \n", 
                    paste(names(table(df$grouping)), 
@@ -883,7 +883,7 @@ df %>%
   labs(x = paste("Estimated Total Household Income (", 
                  currency, "/", "year/household)", 
                  sep = ""),
-       y = "Income Probability",
+       y = "Income Likelihood",
 # Add caption with observation numbers for each household type      
        caption = paste("N =", nrow(df))) +
   # Format x-axis labels as numbers with commas
