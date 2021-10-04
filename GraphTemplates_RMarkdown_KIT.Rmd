@@ -214,11 +214,11 @@ share_color <- "#ed3833"
   
 ## By household type
 # Group 1
-color_1 <- "#8ec68e" # green
+color_1 <- "#8bcae0" # green
 # Group 2
 color_2 <- "#8e8df8"  # purple
 # Group 3
-color_3 <- "#8bcae0"  # blue 
+color_3 <- "#8ec68e" # blue 
 # Group 4
 color_4 <- "magenta"  # note: sample data only has 3 groups
 # Summary line for all groups
@@ -772,6 +772,12 @@ df %>%
 ## By household type
 
 ```{r}
+
+# g1 <- df %>% filter(grouping == levels(df$grouping)[1])
+# g2 <- df %>% filter(grouping == levels(df$grouping)[2])
+# g3 <- df %>% filter(grouping == levels(df$grouping)[3])
+# g4 <- df %>% filter(grouping == levels(df$grouping)[4])
+
 ##### These first few lines of code draft a dataframe of the percent above the 
   # LI benchmark for each group. The character strings in this dataframe are 
   # then used as descriptive comments within the following graph
@@ -791,7 +797,8 @@ df$filler <- "filler"
 ##### Graph code begins here  
 ggplot(df) +
 # Set x-axis to total household income and color by household type  
-  geom_density(aes(x = total_hh_income, color = grouping, fill = grouping), alpha = 0.7) +
+  geom_density(aes(x = total_hh_income, color = grouping, fill = grouping), 
+               alpha = 0.7) +
   
 # Add summary line for all household types
   geom_density(aes(x = total_hh_income, alpha = filler), color = color_all) +
@@ -843,20 +850,54 @@ ggplot(df) +
   guides(color = guide_legend(nrow = 3)) +
   guides(fill = guide_legend(override.aes = list(color = "white"))) +
 
-# Add vertical lines for benchmarks by group   
-  geom_vline(aes(xintercept = mean(df$benchmark[grouping == unique(df$grouping)[1]])), color = color_1, key_glyph = "path") +
+# Add vertical lines for benchmarks by group    
+  geom_vline(data = g1,
+    aes(xintercept = mean(g1$benchmark)), color = color_1, key_glyph = "path") +
   
-    geom_vline(aes(xintercept = mean(df$benchmark[grouping == unique(df$grouping)[2]])), color = color_2, key_glyph = "path") +
+  geom_vline(data = g2,
+    aes(xintercept = mean(g2$benchmark)), color = color_2, key_glyph = "path") +
   
-    geom_vline(aes(xintercept = mean(df$benchmark[grouping == unique(df$grouping)[3]])), color = color_3, key_glyph = "path") +
+  geom_vline(data = g3,
+    aes(xintercept = mean(g3$benchmark)), color = color_3, key_glyph = "path") +
   
-    geom_vline(aes(xintercept = mean(df$benchmark[grouping == unique(df$grouping)[4]])), color = color_4, key_glyph = "path") +
+  geom_vline(data = g4,
+    aes(xintercept = mean(g4$benchmark)), color = color_4, key_glyph = "path") +
 
-  geom_text(mapping=aes(x=mean(benchmark), 
-            y= max(density(df$total_hh_income)$y),
-            label=paste((percent(sum(below_benchmark)/nrow(df))), "below the benchmark")),
-            position = position_nudge(x = mean(df$benchmark)*0.07),
-            vjust=1, hjust=0) +
+# Add text next to vertical lines for % below benchmarks by group
+  geom_label_repel(data = g1, aes(x = mean(g1$benchmark),
+                                  y = max(density(df$total_hh_income)$y)),
+            label = paste( "Living income ", g1$grouping[1], ": ",
+              percent(sum(g1$below_benchmark/nrow(g1))), " below", sep = ""),
+            color = color_1, vjust=1, hjust=0) 
+
+  # geom_label(data = g2,
+  #   mapping=aes(x = mean(g2$benchmark), y = max(density(df$total_hh_income)$y),
+  #           label = paste( "Living income ", g1$grouping[1], ": ",
+  #             percent(sum(g1$below_benchmark/nrow(g1))), " below", sep = "")),
+  #           color = color_2, vjust=1, hjust=0) +
+  # 
+  # geom_label(data = g3,
+  #   mapping=aes(x = mean(g3$benchmark), y = max(density(df$total_hh_income)$y),
+  #           label = paste( "Living income ", g1$grouping[1], ": ",
+  #             percent(sum(g1$below_benchmark/nrow(g1))), " below", sep = "")),
+  #           color = color_3, vjust=1, hjust=0) 
+        
+      #       geom_label(
+      # mapping=aes(
+      #       x = mean(df$benchmark[df$grouping == 
+      #                               unique(df$grouping)[4]]),
+      #       y = max(density(df$total_hh_income[df$grouping == 
+      #                               unique(df$grouping)[4]])$y),
+      #       label = paste(
+      #         "Living income ",
+      #         (unique(df$grouping)[4]),
+      #         ": ",
+      #         (percent(
+      #         sum(df$below_benchmark[df$grouping == unique(df$grouping)[4]])/
+      #         length(df$below_benchmark[df$grouping == unique(df$grouping)[4]]))),
+      #         "below", sep = "")),
+      #       color = color_1,
+      #       vjust=1, hjust=0)
 
 ```
 \newpage
@@ -878,12 +919,17 @@ df %>%
   # Add vertical line for median income
   geom_vline(aes(xintercept = median(df$total_hh_income), 
                  color = "Income Median"), key_glyph = "path") +
+  
   # Add text for percentage below the benchmark
-  # Text positioned to the upper right of the benchmark line 
-  geom_text(mapping=aes(x=mean(benchmark), 
+  # Label positioned to the upper right of the benchmark line 
+    # Note: to have just the text without the background box, 
+          # change the following code line to geom_text instead of geom_label
+  geom_label(mapping=aes(x=mean(benchmark), 
             y= max(density(df$total_hh_income)$y),
             label=paste((percent(sum(below_benchmark)/nrow(df))), "below the benchmark")),
-            position = position_nudge(x = mean(df$benchmark)*0.07),
+            # To bump the text box slightly to the right of the benchmark line,
+            # un-comment the below line. 
+            #position = position_nudge(x = mean(df$benchmark)*0.07),
             vjust=1, hjust=0) +
   # Add graph and axis labels
   labs(x = paste("Estimated Total Household Income (", 
