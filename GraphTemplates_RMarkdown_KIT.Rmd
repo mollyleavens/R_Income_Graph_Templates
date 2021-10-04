@@ -150,6 +150,8 @@ main_crop <-"cocoa"
 currency <- "USD"
 ```
 
+\newpage
+
 # Variable calculations
 
 The following code chunk calculates new summary variables from columns that already exist within the data set
@@ -774,7 +776,6 @@ df %>%
   # LI benchmark for each group. The character strings in this dataframe are 
   # then used as descriptive comments within the following graph
 
-
 # below <- 
 #   df %>%
 #   group_by(grouping) %>% 
@@ -791,21 +792,11 @@ df$filler <- "filler"
 ggplot(df) +
 # Set x-axis to total household income and color by household type  
   geom_density(aes(x = total_hh_income, color = grouping, fill = grouping), alpha = 0.7) +
-  # Add summary line for all household types
+  
+# Add summary line for all household types
   geom_density(aes(x = total_hh_income, alpha = filler), color = color_all) +
   scale_alpha_manual(name = "Legend", values = 1, labels = "All") +
-
-#   for (i in 1:length(unique(df$grouping))) {
-#   
-# ### Add vertical lines for Living Income benchmark(s)
-# # Add and/or subtract lines based on number of household types
-# # and if you have a different benchmark for each.
-#   paste(as.character(geom_vline(aes(xintercept = unique(df$grouping)[i], 
-#                  color = below[i]),
-#              key_glyph = "path")), "+" )
-#   }
-#     +
-
+  
 # Add custom colors
   scale_fill_manual(name = "Legend",
                     values = c(color_1, color_2, color_3, color_4),
@@ -850,7 +841,22 @@ ggplot(df) +
         panel.background = element_rect(fill = "white", colour = NA)) + 
 # Wrap legend onto 3 lines to fit everything neatly     
   guides(color = guide_legend(nrow = 3)) +
-  guides(fill = guide_legend(override.aes = list(color = "white")))
+  guides(fill = guide_legend(override.aes = list(color = "white"))) +
+
+# Add vertical lines for benchmarks by group   
+  geom_vline(aes(xintercept = mean(df$benchmark[grouping == unique(df$grouping)[1]])), color = color_1, key_glyph = "path") +
+  
+    geom_vline(aes(xintercept = mean(df$benchmark[grouping == unique(df$grouping)[2]])), color = color_2, key_glyph = "path") +
+  
+    geom_vline(aes(xintercept = mean(df$benchmark[grouping == unique(df$grouping)[3]])), color = color_3, key_glyph = "path") +
+  
+    geom_vline(aes(xintercept = mean(df$benchmark[grouping == unique(df$grouping)[4]])), color = color_4, key_glyph = "path") +
+
+  geom_text(mapping=aes(x=mean(benchmark), 
+            y= max(density(df$total_hh_income)$y),
+            label=paste((percent(sum(below_benchmark)/nrow(df))), "below the benchmark")),
+            position = position_nudge(x = mean(df$benchmark)*0.07),
+            vjust=1, hjust=0) +
 
 ```
 \newpage
