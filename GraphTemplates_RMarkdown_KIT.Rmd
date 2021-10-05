@@ -772,24 +772,18 @@ df %>%
 ## By household type
 
 ```{r}
+##### These first few lines of code draft a dataframe of the percent below the 
+  # LI benchmark for each group. This dataframe is used in the graph code 
+  # to add the LI used as descriptive comments within the following graph
+below <-
+  df %>%
+  group_by(grouping) %>%
+  summarise(benchmark = mean(benchmark),
+            Percent = percent(sum(total_hh_income < benchmark)/n()))
 
-# g1 <- df %>% filter(grouping == levels(df$grouping)[1])
-# g2 <- df %>% filter(grouping == levels(df$grouping)[2])
-# g3 <- df %>% filter(grouping == levels(df$grouping)[3])
-# g4 <- df %>% filter(grouping == levels(df$grouping)[4])
-
-##### These first few lines of code draft a dataframe of the percent above the 
-  # LI benchmark for each group. The character strings in this dataframe are 
-  # then used as descriptive comments within the following graph
-
-# below <- 
-#   df %>%
-#   group_by(grouping) %>% 
-#   summarise(Percent = percent(sum(total_hh_income < benchmark)/n()))
-# 
-# # Formatting the strings as phrases with punctuation   
-# below <- paste("Living Income", below$grouping, ": ", 
-#                below$Percent, " below", sep = "")
+# Formatting the strings as phrases with punctuation
+below$label <- paste("Living Income ", below$grouping, ": ",
+               below$Percent, " below", sep = "")
 
 # Create a blank variable to allow for manual legend mapping of the summary curve
 df$filler <- "filler"
@@ -833,13 +827,12 @@ ggplot(df) +
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), 
 # Remove background grid (the grid is the default)
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+# Add thin x-axis line
+        axis.line.x = element_line(size = 0.25),
 # Move the legend to the bottom of the graph
         legend.position="bottom",
 # Remove legend title
         legend.title = element_blank(),
-# Remove gray background for legend symbols 
-        legend.key=element_rect(color=NA),
-        # legend.key=element_blank(),
 # Put a box around the legend
         legend.box.background = element_rect(),
 # Move caption to desired location
@@ -851,53 +844,16 @@ ggplot(df) +
   guides(fill = guide_legend(override.aes = list(color = "white"))) +
 
 # Add vertical lines for benchmarks by group    
-  geom_vline(data = g1,
-    aes(xintercept = mean(g1$benchmark)), color = color_1, key_glyph = "path") +
-  
-  geom_vline(data = g2,
-    aes(xintercept = mean(g2$benchmark)), color = color_2, key_glyph = "path") +
-  
-  geom_vline(data = g3,
-    aes(xintercept = mean(g3$benchmark)), color = color_3, key_glyph = "path") +
-  
-  geom_vline(data = g4,
-    aes(xintercept = mean(g4$benchmark)), color = color_4, key_glyph = "path") +
+  geom_vline(data = below,
+    aes(xintercept = benchmark, color = grouping),
+    show.legend = FALSE, key_glyph = "path") +
 
-# Add text next to vertical lines for % below benchmarks by group
-  geom_label_repel(data = g1, aes(x = mean(g1$benchmark),
-                                  y = max(density(df$total_hh_income)$y)),
-            label = paste( "Living income ", g1$grouping[1], ": ",
-              percent(sum(g1$below_benchmark/nrow(g1))), " below", sep = ""),
-            color = color_1, vjust=1, hjust=0) 
-
-  # geom_label(data = g2,
-  #   mapping=aes(x = mean(g2$benchmark), y = max(density(df$total_hh_income)$y),
-  #           label = paste( "Living income ", g1$grouping[1], ": ",
-  #             percent(sum(g1$below_benchmark/nrow(g1))), " below", sep = "")),
-  #           color = color_2, vjust=1, hjust=0) +
-  # 
-  # geom_label(data = g3,
-  #   mapping=aes(x = mean(g3$benchmark), y = max(density(df$total_hh_income)$y),
-  #           label = paste( "Living income ", g1$grouping[1], ": ",
-  #             percent(sum(g1$below_benchmark/nrow(g1))), " below", sep = "")),
-  #           color = color_3, vjust=1, hjust=0) 
-        
-      #       geom_label(
-      # mapping=aes(
-      #       x = mean(df$benchmark[df$grouping == 
-      #                               unique(df$grouping)[4]]),
-      #       y = max(density(df$total_hh_income[df$grouping == 
-      #                               unique(df$grouping)[4]])$y),
-      #       label = paste(
-      #         "Living income ",
-      #         (unique(df$grouping)[4]),
-      #         ": ",
-      #         (percent(
-      #         sum(df$below_benchmark[df$grouping == unique(df$grouping)[4]])/
-      #         length(df$below_benchmark[df$grouping == unique(df$grouping)[4]]))),
-      #         "below", sep = "")),
-      #       color = color_1,
-      #       vjust=1, hjust=0)
+# Add labels with percent below benchmark for each group  
+  geom_label_repel(data = below, 
+     aes(x = benchmark, y = max(density(df$total_hh_income)$y),
+         color = grouping, label = label),
+         direction = "y", show.legend = FALSE, segment.alpha = 0, 
+         vjust=1, hjust=0)
 
 ```
 \newpage
@@ -926,7 +882,8 @@ df %>%
           # change the following code line to geom_text instead of geom_label
   geom_label(mapping=aes(x=mean(benchmark), 
             y= max(density(df$total_hh_income)$y),
-            label=paste((percent(sum(below_benchmark)/nrow(df))), "below the benchmark")),
+            label=paste((percent(sum(below_benchmark)/nrow(df))), 
+                        "below the benchmark")),
             # To bump the text box slightly to the right of the benchmark line,
             # un-comment the below line. 
             #position = position_nudge(x = mean(df$benchmark)*0.07),
@@ -947,6 +904,10 @@ df %>%
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
   # Remove background grid (the grid is the default)
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  # Add thin x-axis line
+        axis.line.x = element_line(size = 0.25),
+  # Make graph background white
+        panel.background = element_rect(fill = "white", colour = NA), 
   # Move the legend to the bottom of the graph
         legend.position="bottom",
   # Remove legend title
