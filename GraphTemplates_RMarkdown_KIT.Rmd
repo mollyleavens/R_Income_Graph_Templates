@@ -1,7 +1,7 @@
 ---
 title: "R Graph Templates for Visualizing Living Income"
 author: "Molly Leavens on behalf of the Sustainable Food Lab"
-date: "Last updated 9/2/2021"
+date: "Last updated 10/5/2021"
 output:  
   pdf_document:
     toc: yes
@@ -107,6 +107,9 @@ df$income_main_crop <- df$"VARIABLE NAME"
   # If your data set does not already have a named variable for total income, you can 
   # instead assign the following line of code to total_hh_income:
   # df$income_main_crop + df$"OTHER INCOME VARIABLE NAME"
+    # NOTE: This variable should NOT include value of food produced. The 
+    # subsequent code chunk 'Variable calculations' creates a separate variable
+    # for total income with food included. 
 df$total_hh_income <- df$"VARIABLE NAME"
 
 ## Value of food produced at home
@@ -158,6 +161,8 @@ The following code chunk calculates new summary variables from columns that alre
 
 Note: These summary values are already calculated in the uploaded example data set. 
 ```{r}
+# Create total income variable that includes value of food produced
+df$total_hh_income_including_food_value <- df$total_hh_income + df$food_value
 
 # Create a yes/no binary for if the farmer is above the benchmark.
   # 1 is yes, 0 is no
@@ -166,13 +171,13 @@ df$below_benchmark <-
 
 # Create below benchmark binary with value of food produced at home included   
 df$below_benchmark_with_food <- 
-  ifelse((df$total_hh_income + df$food_value) > df$benchmark, 0, 1)
+  ifelse((df$total_hh_income_including_food_value) > df$benchmark, 0, 1)
 
 # Calculate the Foster–Greer–Thorbecke (FGT) gap 
 df$fgt_gap <- pmax((df$benchmark - df$total_hh_income), 0)/df$benchmark
   
 # Calculate the FGT with value of food produced at home included
-fgt_gap_with_food <- pmax((df$benchmark - (df$total_hh_income + df$food_value)), 0)/df$benchmark
+fgt_gap_with_food <- pmax((df$benchmark - (df$total_hh_income_including_food_value)), 0)/df$benchmark
 ```
 
 
@@ -602,7 +607,7 @@ df %>%
   group_by(grouping) %>% 
 # For each grouping, summarize the median gap to the living income, 
 # the median other income, and the median main_crop income. 
-  summarise(Gap = median(benchmark - total_hh_income - food_value),
+  summarise(Gap = median(benchmark - total_hh_income_including_food_value),
             Food = median(food_value),
             main_crop = median(income_main_crop),
             benchmark = median(benchmark)) %>% 
@@ -669,7 +674,7 @@ df %>%
 # For each household type, summarize the median gap to the living income,
 # the median other income, and the median main_crop income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
-  summarise(Gap = median((benchmark - total_hh_income - food_value)/benchmark),
+  summarise(Gap = median((benchmark - total_hh_income_including_food_value)/benchmark),
             Food = median(food_value/benchmark),
             main_crop = median(income_main_crop/benchmark)) %>% 
   mutate(Other = (1 - Gap - main_crop - Food)) %>%
