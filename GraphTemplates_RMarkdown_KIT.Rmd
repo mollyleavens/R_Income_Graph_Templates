@@ -10,6 +10,21 @@ output:
 urlcolor: blue    
 ---
 
+```{r, echo=FALSE, fig.align='center'}
+
+# Add Sustainable Food Lab logo
+library(knitr)
+include_graphics("food-lab-logo-85px.png")
+
+ # Add hook so there is a space after each code chunk before each graphic
+ if(is_latex_output()) {
+   plot_default <- knit_hooks$get("plot")
+   knit_hooks$set(plot = function(x, options) {
+     x <- c("\\vspace{25pt}", plot_default(x, options))
+   })
+ }
+```
+
 \newpage
 
 # Instructions for use
@@ -1683,7 +1698,7 @@ df %>%
           # change the following code line to geom_text instead of geom_label
   geom_label(mapping=aes(x=mean(benchmark), 
             y= max(density(df$total_hh_income_including_food_value)$y),
-            label=paste((percent(sum(below_benchmark)/nrow(df))), 
+            label=paste((percent(sum(below_benchmark_with_food)/nrow(df))), 
                         "below the benchmark")),
             # To bump the text box slightly to the right of the benchmark line,
             # un-comment the below line. 
@@ -1869,7 +1884,7 @@ df %>%
                                  max(df$total_hh_income_including_food_value),
                                  dist(range(df$total_hh_income_including_food_value))/
                                    (max(df$total_hh_income_including_food_value)/500))))),
-            label=paste((percent(sum(below_benchmark)/nrow(df))), 
+            label=paste((percent(sum(below_benchmark_with_food)/nrow(df))), 
                         "below the benchmark")),
             # To bump the text box slightly to the right of the benchmark line,
             # un-comment the below line. 
@@ -2049,7 +2064,7 @@ df %>%
                                  max(df$total_hh_income_including_food_value),
                                  dist(range(df$total_hh_income_including_food_value))/
                                    (max(df$total_hh_income_including_food_value)/500))))),
-            label=paste((percent(sum(below_benchmark)/nrow(df))), 
+            label=paste((percent(sum(below_benchmark_with_food)/nrow(df))), 
                         "below the benchmark")),
             # To bump the text box slightly to the right of the benchmark line,
             # un-comment the below line. 
