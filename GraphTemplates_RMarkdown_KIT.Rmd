@@ -182,16 +182,6 @@ df$fgt_gap <- pmax((df$benchmark - df$total_hh_income), 0)/df$benchmark
 # Calculate the FGT with value of food produced at home included
 fgt_gap_with_food <- pmax((df$benchmark - 
                          (df$total_hh_income_including_food_value)), 0)/df$benchmark
-
-# Calculate gap to benchmark
-df$gap <- df$benchmark - df$total_hh_income
-# Replace negative values (ie, above benchmark) with NA
-df$gap <- ifelse(df$gap > 0, df$gap, NA)
-
-# Calculate gap to benchmark with value of food produced at home included 
-df$gap_with_food <- df$benchmark - df$total_hh_income_2018_including_food_value
-# Replace negative values (ie, above benchmark) with NA
-df$gap <- ifelse(df$gap > 0, df$gap, NA)
 ```
 
 
@@ -325,6 +315,7 @@ df <- df %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
+graph <- 
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
@@ -332,7 +323,11 @@ df %>%
 # the mean other income, and the mean main_crop income 
   summarise(Gap = mean(benchmark - total_hh_income),
             Other = mean(total_hh_income - income_main_crop),
-            main_crop = mean(income_main_crop)) %>% 
+            main_crop = mean(income_main_crop)) 
+# Re-label all negative gaps (i.e, income above the benchmark) as NA
+graph$Gap <- ifelse(graph$Gap > 0, graph$Gap, NA)
+
+graph %>%   
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", Gap:main_crop) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
@@ -386,6 +381,7 @@ df %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
+graph <-
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
@@ -394,7 +390,11 @@ df %>%
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
   summarise(Gap = mean((benchmark - total_hh_income)/benchmark),
             Other = mean((total_hh_income - income_main_crop)/benchmark),
-            main_crop = mean(income_main_crop/benchmark)) %>% 
+            main_crop = mean(income_main_crop/benchmark)) 
+# Re-label all negative gaps (i.e, income above the benchmark) as NA
+graph$Gap <- ifelse(graph$Gap > 0, graph$Gap, NA) 
+
+graph %>%   
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", Gap:main_crop) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
@@ -450,6 +450,7 @@ df %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
+graph <- 
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
@@ -457,7 +458,11 @@ df %>%
 # the median other income, and the median main_crop income. 
   summarise(Gap = median(benchmark - total_hh_income),
             main_crop = median(income_main_crop),
-            benchmark = median(benchmark)) %>%
+            benchmark = median(benchmark))
+# Re-label all negative gaps (i.e, income above the benchmark) as NA
+graph$Gap <- ifelse(graph$Gap > 0, graph$Gap, NA) 
+
+graph %>%
   mutate(Other = (benchmark - Gap - main_crop)) %>% 
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", c(Gap, main_crop, Other)) %>% 
@@ -512,6 +517,7 @@ df %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
+graph <-
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
@@ -519,8 +525,13 @@ df %>%
 # the median other income, and the median main_crop income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
   summarise(Gap = median((benchmark - total_hh_income)/benchmark),
-            main_crop = median((income_main_crop/benchmark)))%>%
-  mutate(Other = (1 - Gap - main_crop)) %>%
+            main_crop = median((income_main_crop/benchmark)))
+# Re-label all negative gaps (i.e, income above the benchmark) as NA
+graph$Gap <- ifelse(graph$Gap > 0, graph$Gap, NA) 
+
+graph %>%
+# Add column for other income sources   
+  mutate(Other = (1 - Gap - main_crop)) %>% 
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", Gap:Other) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
@@ -616,6 +627,7 @@ df %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
+graph <- 
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
@@ -624,7 +636,11 @@ df %>%
   summarise(Gap = max(mean(benchmark - total_hh_income_including_food_value),0),
             Food = mean(food_value),
             Other = mean(total_hh_income - income_main_crop),
-            main_crop = mean(income_main_crop)) %>% 
+            main_crop = mean(income_main_crop))
+# Re-label all negative gaps (i.e, income above the benchmark) as NA
+graph$Gap <- ifelse(graph$Gap > 0, graph$Gap, NA) 
+
+graph %>% 
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", Gap:main_crop) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
@@ -679,20 +695,26 @@ df %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
+graph <- 
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
 # For each household type, summarize the mean gap to the living income, 
 # the mean other income, and the mean main_crop income. 
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
-  summarise(Gap = mean((benchmark - total_hh_income)/benchmark),
+  summarise(Gap = mean((benchmark - total_hh_income_including_food_value)/benchmark),
+            Food = mean(food_value/benchmark),
             Other = mean((total_hh_income - income_main_crop)/benchmark),
-            main_crop = mean(income_main_crop/benchmark)) %>% 
+            main_crop = mean(income_main_crop/benchmark)) 
+# Re-label all negative gaps (i.e, income above the benchmark) as NA
+graph$Gap <- ifelse(graph$Gap > 0, graph$Gap, NA) 
+
+graph %>% 
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", Gap:main_crop) %>% 
 # Re-level the income factors for the order you want them stacked on the graph  
   mutate(Component = factor(Component, 
-                            levels = c("Gap", "Other", "main_crop"))) %>% 
+                            levels = c("Gap", "Food", "Other", "main_crop"))) %>% 
 # Generate ggplot graph for income by groupings and income component  
   ggplot(aes(y = Income, x = grouping, fill = Component)) +
 # Assign graph as stacked bar chart  
@@ -708,11 +730,13 @@ df %>%
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend  
-  scale_fill_manual(values=c(gap_color, other_color, main_color),
+  scale_fill_manual(values=c(gap_color, food_color, other_color, main_color),
                       breaks=c("Gap",
+                               "Food",
                                 "Other",
                                 "main_crop"),
                       labels=c("Gap to the Living Income Benchmark",
+                               "Value of crops consumed at home",
                                 "Other income",
                                 "Income from main crop")) +
 # Format y-axis labels with a comma  
@@ -741,6 +765,7 @@ df %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
+graph <-
 df %>% 
 # Group by grouping
   group_by(grouping) %>% 
@@ -749,7 +774,11 @@ df %>%
   summarise(Gap = median(benchmark - total_hh_income_including_food_value),
             Food = median(food_value),
             main_crop = median(income_main_crop),
-            benchmark = median(benchmark)) %>% 
+            benchmark = median(benchmark)) 
+# Re-label all negative gaps (i.e, income above the benchmark) as NA
+graph$Gap <- ifelse(graph$Gap > 0, graph$Gap, NA) 
+
+graph %>% 
   mutate(Other = (benchmark - Gap - main_crop - Food)) %>%
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", c(Gap, Food, main_crop, Other)) %>% 
@@ -807,6 +836,7 @@ df %>%
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
+graph <- 
 df %>% 
 # Group by household type
   group_by(grouping) %>% 
@@ -815,7 +845,11 @@ df %>%
 # Calculate all as percentages of the Living income benchmark - the total of the income and gap
   summarise(Gap = median((benchmark - total_hh_income_including_food_value)/benchmark),
             Food = median(food_value/benchmark),
-            main_crop = median(income_main_crop/benchmark)) %>% 
+            main_crop = median(income_main_crop/benchmark))
+# Re-label all negative gaps (i.e, income above the benchmark) as NA
+graph$Gap <- ifelse(graph$Gap > 0, graph$Gap, NA) 
+
+graph %>% 
   mutate(Other = (1 - Gap - main_crop - Food)) %>%
 # Gather each income components into one column so the data is in 'long' format
   gather(key = "Component", value = "Income", Gap:Other) %>% 
