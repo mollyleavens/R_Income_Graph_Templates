@@ -1,7 +1,7 @@
 ---
 title: "R Graph Templates for Visualizing Living Income"
 author: "Molly Leavens on behalf of the Sustainable Food Lab"
-date: "Last updated 10/5/2021"
+date: "Last updated 10/13/2021"
 output:  
   pdf_document:
     toc: yes
@@ -160,7 +160,7 @@ currency <- "USD"
 
 # Variable calculations
 
-The following code chunk calculates new summary variables from columns that already exist within the data set
+The following code chunk calculates new summary variables from columns that already exist within the data set.
 
 Note: These summary values are already calculated in the uploaded example data set. 
 ```{r}
@@ -180,7 +180,18 @@ df$below_benchmark_with_food <-
 df$fgt_gap <- pmax((df$benchmark - df$total_hh_income), 0)/df$benchmark
   
 # Calculate the FGT with value of food produced at home included
-fgt_gap_with_food <- pmax((df$benchmark - (df$total_hh_income_including_food_value)), 0)/df$benchmark
+fgt_gap_with_food <- pmax((df$benchmark - 
+                         (df$total_hh_income_including_food_value)), 0)/df$benchmark
+
+# Calculate gap to benchmark
+df$gap <- df$benchmark - df$total_hh_income
+# Replace negative values (ie, above benchmark) with NA
+df$gap <- ifelse(df$gap > 0, df$gap, NA)
+
+# Calculate gap to benchmark with value of food produced at home included 
+df$gap_with_food <- df$benchmark - df$total_hh_income_2018_including_food_value
+# Replace negative values (ie, above benchmark) with NA
+df$gap <- ifelse(df$gap > 0, df$gap, NA)
 ```
 
 
@@ -212,7 +223,7 @@ other_color <- "#b3dceb"
 # Income from main crop
 main_color <- "#b3b3fa"
 # Value of crops consumed at home
-home_color <- "#fad8b3"
+food_color <- "#fad8b3"
   
 ## Share of observations below the Living Income Benchmark
 # Note: these bars all appear the same color
@@ -601,7 +612,132 @@ df %>%
 
 # Bar charts including the intrinsic value of food produced and consumed at home
 
-## The gap of the absolute median income to the Living Income Benchmark - bar chart
+## The gap of the mean income to the Living Income Benchmark 
+
+```{r,}
+## The first section of this code summarizes and formats the data to be graph-ready
+df %>% 
+# Group by household type
+  group_by(grouping) %>% 
+# For each household type, summarize the mean gap to the living income, 
+# the mean other income, and the mean main_crop income 
+  summarise(Gap = max(mean(benchmark - total_hh_income_including_food_value),0),
+            Food = mean(food_value),
+            Other = mean(total_hh_income - income_main_crop),
+            main_crop = mean(income_main_crop)) %>% 
+# Gather each income components into one column so the data is in 'long' format
+  gather(key = "Component", value = "Income", Gap:main_crop) %>% 
+# Re-level the income factors for the order you want them stacked on the graph  
+  mutate(Component = factor(Component, 
+                            levels = c("Gap","Food", "Other", "main_crop"))) %>% 
+# Generate ggplot graph for income by groupings and income component  
+  ggplot(aes(y = Income, x = grouping, fill = Component)) +
+# Assign graph as stacked bar chart  
+  geom_bar(position = "stack", stat = "identity") +
+# Label the graph title, axis, and caption  
+  labs(title = "Mean values", 
+       y = paste("(", currency, "/year/household)", sep = ""),
+       x = "",
+# Add caption with observation numbers for each household type  
+       caption = paste("Based on: \n", 
+                   paste(names(table(df$grouping)), 
+                       ":", 
+                       as.numeric(table(df$grouping)), 
+                       "observations \n ", collapse = ''), collapse = '')) +
+# Label the legend and assign custom colors 
+  scale_fill_manual(values=c(gap_color, food_color, other_color, main_color),
+                    breaks=c("Gap", "Food", "Other", "main_crop"),
+                    labels=c("Gap to the Living Income Benchmark",
+                             "Value of crops consumed at home",
+                                "Other income",
+                                "Income from main crop")) +
+# Format y-axis labels with a comma  
+  scale_y_continuous(labels = comma) +
+# Remove x-axis grid lines and tick marks  
+  theme(panel.grid.major.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank(),
+# Center plot title        
+        plot.title = element_text(hjust = 0.5),
+# Move the legend to the bottom of the graph
+        legend.position="bottom",
+# Remove legend title
+        legend.title = element_blank(),
+# Put a box around the legend
+        legend.box.background = element_rect(),
+# Move caption to desired location
+        plot.caption = element_text(hjust = 0)) +
+# Add incomes to prospective graph components  
+  geom_text(aes(label = round(Income)), 
+            position = position_stack(vjust = 0.5), 
+            size = 3) 
+```
+
+\newpage
+
+## The gap of the relative mean income to the Living Income Benchmark
+
+```{r,}
+## The first section of this code summarizes and formats the data to be graph-ready
+df %>% 
+# Group by household type
+  group_by(grouping) %>% 
+# For each household type, summarize the mean gap to the living income, 
+# the mean other income, and the mean main_crop income. 
+# Calculate all as percentages of the Living income benchmark - the total of the income and gap
+  summarise(Gap = mean((benchmark - total_hh_income)/benchmark),
+            Other = mean((total_hh_income - income_main_crop)/benchmark),
+            main_crop = mean(income_main_crop/benchmark)) %>% 
+# Gather each income components into one column so the data is in 'long' format
+  gather(key = "Component", value = "Income", Gap:main_crop) %>% 
+# Re-level the income factors for the order you want them stacked on the graph  
+  mutate(Component = factor(Component, 
+                            levels = c("Gap", "Other", "main_crop"))) %>% 
+# Generate ggplot graph for income by groupings and income component  
+  ggplot(aes(y = Income, x = grouping, fill = Component)) +
+# Assign graph as stacked bar chart  
+  geom_bar(position = "stack", stat = "identity") +
+# Label the graph title, axis, and caption  
+  labs(title = "Mean values in relation to the benchmark value", 
+       y = "% of the benchmark value",
+       x = " ",
+# Add caption with observation numbers for each household type            
+       caption = paste("Based on: \n", 
+                   paste(names(table(df$grouping)), 
+                       ":", 
+                       as.numeric(table(df$grouping)), 
+                       "observations \n ", collapse = ''), collapse = '')) +
+# Label the legend  
+  scale_fill_manual(values=c(gap_color, other_color, main_color),
+                      breaks=c("Gap",
+                                "Other",
+                                "main_crop"),
+                      labels=c("Gap to the Living Income Benchmark",
+                                "Other income",
+                                "Income from main crop")) +
+# Format y-axis labels with a comma  
+  scale_y_continuous(labels = percent) +
+# Remove x-axis grid lines and tick marks  
+  theme(panel.grid.major.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank(),
+# Center plot title        
+        plot.title = element_text(hjust = 0.5),
+# Move the legend to the bottom of the graph
+        legend.position="bottom",
+# Remove legend title
+        legend.title = element_blank(),
+# Put a box around the legend
+        legend.box.background = element_rect(),
+# Move caption to desired location
+        plot.caption = element_text(hjust = 0)) +
+# Add incomes to prospective graph components  
+  geom_text(aes(label = label_percent(accuracy = 1L)(Income)), 
+            position = position_stack(vjust = 0.5), 
+            size = 3) 
+```
+
+## The gap of the absolute median income to the Living Income Benchmark
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
@@ -635,7 +771,7 @@ df %>%
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend and assign custom colors 
-  scale_fill_manual(values=c(gap_color, home_color, other_color, main_color),
+  scale_fill_manual(values=c(gap_color, food_color, other_color, main_color),
                     breaks=c("Gap", "Food", "Other", "main_crop"),
                     labels=c("Gap to the Living Income Benchmark",
                              "Value of crops consumed at home",
@@ -667,7 +803,7 @@ df %>%
 
 \newpage
 
-## The gap of the relative median income to the Living Income Benchmark - bar chart
+## The gap of the relative median income to the Living Income Benchmark
 
 ```{r,}
 ## The first section of this code summarizes and formats the data to be graph-ready
@@ -701,7 +837,7 @@ df %>%
                        as.numeric(table(df$grouping)), 
                        "observations \n ", collapse = ''), collapse = '')) +
 # Label the legend and assign custom colors 
-  scale_fill_manual(values=c(gap_color, home_color, other_color, main_color),
+  scale_fill_manual(values=c(gap_color, food_color, other_color, main_color),
                     breaks=c("Gap", "Food", "Other", "main_crop"),
                     labels=c("Gap to the Living Income Benchmark",
                              "Value of crops consumed at home",
@@ -733,7 +869,7 @@ df %>%
 
 \newpage
 
-## Share of those below the Living Income benchmark - bar chart
+## Share of those below the Living Income benchmark
 
 ```{r,}
 df %>% 
@@ -998,10 +1134,12 @@ ggplot(df) +
                          as.numeric(table(df$grouping)), 
                          "observations \n ", collapse = ''), 
                      "bin size = 500", currency, collapse = '')) +
+  
   # Format x-axis labels as numbers with commas
   # If your data has extreme income outliers, 
       # you may need to filter them or add x-axis limits so they do not warp the graph 
     scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
+    scale_y_continuous(labels = comma, breaks=pretty_breaks(5)) +
     
   ## Graph formatting  
     theme(
@@ -1277,7 +1415,7 @@ df %>%
   # If your data has extreme income outliers, 
     # you may need to filter them or add x-axis limits so they do not warp the graph 
   scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
-  scale_y_continuous(labels = percent) +
+  scale_y_continuous(labels = comma) +
   
   ## Graph formatting 
   theme(
