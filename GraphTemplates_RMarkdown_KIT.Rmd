@@ -970,7 +970,7 @@ below <-
 ggplot(df) +
   # Set x-axis to total household income and color by household type  
     geom_area(aes(x = total_hh_income, color = grouping, fill = grouping), 
-                 alpha = 0.7, stat = "bin", binwidth = 500) +
+                 alpha = 0.7, stat = "bin", binwidth = 500, position = 'identity') +
     
   # Add summary line for all household types
     geom_freqpoly(aes(x = total_hh_income, alpha = filler), 
@@ -1020,7 +1020,9 @@ ggplot(df) +
   # Remove legend title
         legend.title = element_blank(),
   # Put a box around the legend
-        legend.box.background = element_rect()) + 
+        legend.box.background = element_rect(),
+  # Remove gray background for "All" legend symbol
+        legend.key=element_rect(fill=NA)) + 
   # Assign legend line color to white. This ensures the fill boxes do not 
       # take on the color of the summary distribution line 
     guides(fill = guide_legend(override.aes = list(color = "white"))) +
@@ -1095,7 +1097,7 @@ df %>%
   # If your data has extreme income outliers, 
     # you may need to filter them or add x-axis limits so they do not warp the graph 
   scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
-  scale_y_continuous(labels = percent) +
+  scale_y_continuous(labels = comma) +
   
   ## Graph formatting 
   theme(
@@ -1148,7 +1150,12 @@ below <-
 ggplot(df) +
   # Set x-axis to total household income and color by household type  
     geom_histogram(aes(x = total_hh_income, color = grouping, fill = grouping), 
-                 alpha = 0.7, stat = "bin", binwidth = 500) +
+                 alpha = 0.7, stat = "bin", binwidth = 500, position = 'identity') +
+    
+  # Add summary line for all household types  
+    geom_step(aes(x = total_hh_income, alpha = filler), 
+                 color = color_all, stat = "bin", binwidth = 500) +
+    scale_alpha_manual(name = "Legend", values = 1, labels = "All") +
 
   # Add custom colors
     scale_fill_manual(name = "Legend",
@@ -1193,7 +1200,9 @@ ggplot(df) +
   # Remove legend title
         legend.title = element_blank(),
   # Put a box around the legend
-        legend.box.background = element_rect()) + 
+        legend.box.background = element_rect(),
+  # Remove gray background for "All" legend symbol
+        legend.key=element_rect(fill=NA)) + 
   # Assign legend line color to white. This ensures the fill boxes do not 
       # take on the color of the summary distribution line 
     guides(fill = guide_legend(override.aes = list(color = "white"))) +
@@ -1226,7 +1235,7 @@ df %>%
   # Set x-axis to key variable
   ggplot(aes(x = total_hh_income)) +
   # Add density line. You can change the fill and line colors.
-  geom_area(color = "#add8e6", fill = "#add8e6", stat = "bin", binwidth = 500) +
+  geom_histogram(color = "#add8e6", fill = "#add8e6", stat = "bin", binwidth = 500) +
   
   # Add vertical line for living income
   geom_vline(aes(xintercept = mean(benchmark), 
