@@ -1,7 +1,7 @@
 ---
 title: "R Graph Templates for Visualizing Living Income"
 author: "Molly Leavens on behalf of the Sustainable Food Lab"
-date: "Last updated 10/13/2021"
+date: "Last updated 6/23/2022"
 output:  
   pdf_document:
     toc: yes
@@ -25,9 +25,14 @@ include_graphics("food-lab-logo-85px.png")
  }
 ```
 
+```{r,echo=FALSE}
+# This code chunk removes the printing of messages and warnings on the knit PDF file. Remove the following code chunk if you would like to view all R-generated messages and warnings. 
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
 \newpage
 
-# Instructions for use
+# Document introduction
 
 * The Sustainable Food Lab created this document to support companies and research organizations who are visualizing income data and its relationship to established Living Income Benchmarks. This document supplements tools developed by KIT to generate these graphics in [Stata and Excel](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn).     
 
@@ -37,7 +42,11 @@ include_graphics("food-lab-logo-85px.png")
 
 * The example graphs below visualize a publicly-available data set based on previous work of KIT for the Living Income Community of Practice.
 
-* The sample data set assigns different Living Income benchmarks to different household types. No changes to the code are necessary if your data only has one benchmark for all household types or genders.  
+* The sample data set assigns different Living Income benchmarks to different household types. If your data only has one benchmark for all household types or genders, there is no need to change the code as it will automatically adjust.
+
+# Instructions for use
+
+* Before knitting the R markdown into a PDF, there are two **necessary** actions for the user. First, load R libraries under "Load R libraries" code chunk. Second, enter data under "User-entered data" code chunk.
 
 # Troubleshooting
 If you are encountering challenges and/or errors when running this code, try these five initial troubleshooting: 
@@ -56,26 +65,17 @@ If you have further questions about this document, please reach out to the Livin
 
 \newpage
 
-# Setup
+# Load R libraries
 
-```{r,echo=FALSE}
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
-```
-
-<p>&nbsp;</p>
+Before continuing any further, load the R libraries that house the necessary functions for this analysis. If you have not previously used these R libraries, you will need to instaLl them. See instructions in below code chunk.  
 
 ```{r, echo=TRUE}
-#### Before continuing any further, load the R libraries that have the 
-# necessary functions for this analysis. 
-
-# If you have not previously used these libraries, 
-# you will need to instaLl them with the function install.packages("LIBRARY NAME").
-# For example: install.packages(tidyverse)
+# To instaLl libraries, run the function: install.packages("LIBRARY NAME")
+# Example: install.packages("tidyverse")
 library(tidyverse)
 library(knitr)
 library(scales)
-# The ggrepel library is only necessary for the distribution graph by house for
-  # the labels on the percent below benchmark.
+# The ggrepel library is only necessary for the distribution graph by household
 library(ggrepel)
 ```
 
