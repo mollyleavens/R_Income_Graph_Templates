@@ -1,7 +1,7 @@
 ---
 title: "R Graph Templates for Visualizing Living Income"
 author: "Molly Leavens on behalf of the Sustainable Food Lab"
-date: "Last updated 10/13/2021"
+date: "Last updated 6/23/2022"
 output:  
   pdf_document:
     toc: yes
@@ -25,9 +25,14 @@ include_graphics("food-lab-logo-85px.png")
  }
 ```
 
+```{r,echo=FALSE}
+# This code chunk removes the printing of messages and warnings on the knit PDF file. Remove the following code chunk if you would like to view all R-generated messages and warnings. 
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
 \newpage
 
-# Instructions for use
+# Document introduction
 
 * The Sustainable Food Lab created this document to support companies and research organizations who are visualizing income data and its relationship to established Living Income Benchmarks. This document supplements tools developed by KIT to generate these graphics in [Stata and Excel](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn).     
 
@@ -37,7 +42,11 @@ include_graphics("food-lab-logo-85px.png")
 
 * The example graphs below visualize a publicly-available data set based on previous work of KIT for the Living Income Community of Practice.
 
-* The sample data set assigns different Living Income benchmarks to different household types. No changes to the code are necessary if your data only has one benchmark for all household types or genders.  
+* The sample data set assigns different Living Income benchmarks to different household types. If your data only has one benchmark for all household types or genders, there is no need to change the code as it will automatically adjust.
+
+# Instructions for use
+
+* Before knitting the R markdown into a PDF, there are two **necessary** actions for the user. First, load R libraries under "Load R libraries" code chunk. Second, enter data under "User-entered data" code chunk.
 
 # Troubleshooting
 If you are encountering challenges and/or errors when running this code, try these five initial troubleshooting: 
@@ -56,26 +65,17 @@ If you have further questions about this document, please reach out to the Livin
 
 \newpage
 
-# Setup
+# Load R libraries
 
-```{r,echo=FALSE}
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
-```
-
-<p>&nbsp;</p>
+Before continuing any further, load the R libraries that house the necessary functions for this analysis. If you have not previously used these R libraries, you will need to instaLl them. See instructions in below code chunk.  
 
 ```{r, echo=TRUE}
-#### Before continuing any further, load the R libraries that have the 
-# necessary functions for this analysis. 
-
-# If you have not previously used these libraries, 
-# you will need to instaLl them with the function install.packages("LIBRARY NAME").
-# For example: install.packages(tidyverse)
+# To instaLl libraries, run the function: install.packages("LIBRARY NAME")
+# Example: install.packages("tidyverse")
 library(tidyverse)
 library(knitr)
 library(scales)
-# The ggrepel library is only necessary for the distribution graph by house for
-  # the labels on the percent below benchmark.
+# The ggrepel library is only necessary for the distribution graph by household
 library(ggrepel)
 ```
 
@@ -292,7 +292,7 @@ fonttable()
 # Step 4: Select your desired font
 # Ensure you paste the 'FontName' as listed in the front table printed in step 3
   # There should not be any spaces in the same pasted below
-font <- "PASTE THE NAME OF DESIRED FONT HERE." # e.g.: "CourierNewPSMT"
+font <- "PASTE THE NAME OF DESIRED FONT HERE" # e.g.: "CourierNewPSMT"
 
 # Step 5: Set default to your selected font.
 theme_set(theme_get() + theme(text = element_text(family = font)))
@@ -1045,176 +1045,6 @@ df %>%
 
 \newpage
 
-# Share of those below the Living Income Benchmark - density plot 
-
-## By household type
-
-```{r}
-##### These first few lines of code draft a dataframe of the percent below the 
-  # LI benchmark for each group. This dataframe is used in the graph code 
-  # to add the LI used as descriptive comments within the following graph
-below <-
-  df %>%
-  group_by(grouping) %>%
-  summarise(benchmark = mean(benchmark),
-            Percent = percent(sum(total_hh_income < benchmark)/n()))
-
-# Formatting the strings as phrases with punctuation
-below$label <- paste("Living Income ", below$grouping, ": ",
-               below$Percent, " below", sep = "")
-
-# Create a blank variable to allow for manual legend mapping of the summary curve
-df$filler <- "filler"
-
-##### Graph code begins here  
-ggplot(df) +
-  # Set x-axis to total household income and color by household type  
-    geom_density(aes(x = total_hh_income, color = grouping, fill = grouping), 
-                 alpha = 0.7) +
-    
-  # Add summary line for all household types
-    geom_density(aes(x = total_hh_income, alpha = filler), color = color_all) +
-    scale_alpha_manual(name = "Legend", values = 1, labels = "All") +
-    
-  # Add custom colors
-    scale_fill_manual(name = "Legend",
-                      values = c(color_1, color_2, color_3, color_4),
-                      breaks = c(levels(df$grouping)),
-                      labels = c(levels(df$grouping))) +
-    scale_color_manual(name = "Legend",
-                      values = c(color_1, color_2, color_3, color_4),
-                      breaks = c(levels(df$grouping)),
-                      labels = c(levels(df$grouping))) +
-    
-  # Add graph and axis labels
-    labs(x = paste("Estimated Total Household Income (", 
-                   currency, "/year/household)", sep = ""),
-         y = "Income Likelihood",
-  # Add caption with observation numbers for each household type               
-         caption = paste("Based on: \n", 
-                     paste(names(table(df$grouping)), 
-                         ":", 
-                         as.numeric(table(df$grouping)), 
-                         "observations \n ", collapse = ''), collapse = '')) +
-  # Format x-axis labels as numbers with commas
-  # If your data has extreme income outliers, 
-      # you may need to filter them or add x-axis limits so they do not warp the graph 
-    scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
-    
-  ## Graph formatting  
-    theme(
-  # Remove y-axis labels and ticks    
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(), 
-  # Remove background grid (the grid is the default)
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-  # Make graph background white
-        panel.background = element_rect(fill = "white", colour = NA), 
-  # Add thin x-axis line
-        axis.line.x = element_line(size = 0.25),
-  # Move caption to desired location
-        plot.caption = element_text(hjust = 0),
-  
-  ## Legend formatting
-  # Move the legend to the bottom of the graph
-        legend.position="bottom",
-  # Remove legend title
-        legend.title = element_blank(),
-  # Put a box around the legend
-        legend.box.background = element_rect()) + 
-  # Assign legend line color to white. This ensures the fill boxes do not 
-      # take on the color of the summary distribution line 
-    guides(fill = guide_legend(override.aes = list(color = "white"))) +
-  
-  # Add vertical lines for benchmarks by group    
-    geom_vline(data = below,
-      aes(xintercept = benchmark, color = grouping),
-      show.legend = FALSE, key_glyph = "path") +
-  
-  # Add labels with percent below benchmark for each group  
-    geom_label_repel(data = below, 
-       aes(x = benchmark, y = max(density(df$total_hh_income)$y),
-           color = grouping, label = label),
-           direction = "y", show.legend = FALSE, segment.alpha = 0, 
-           vjust=1, hjust=0)
-
-```
-\newpage
-
-## With mean and median
-```{r,}
-df %>%
-  # Set x-axis to key variable
-  ggplot(aes(x = total_hh_income, y =(..count..)/n), fill = dataset) +
-  # Add density line. You can change the fill and line colors.
-  geom_density(color = "#add8e6", fill = "#add8e6") +
-  
-  # Add vertical line for living income
-  geom_vline(aes(xintercept = mean(benchmark), 
-                 color = "Living Income Benchmark"), key_glyph = "path") +
-  # Add vertical line for mean income 
-  geom_vline(aes(xintercept = mean(df$total_hh_income), 
-                 color = "Income Mean"), key_glyph = "path") +
-  # Add vertical line for median income
-  geom_vline(aes(xintercept = median(df$total_hh_income), 
-                 color = "Income Median"), key_glyph = "path") +
-  
-  # Add text for percentage below the benchmark
-  # Label positioned to the upper right of the benchmark line 
-    # Note: to have just the text without the background box, 
-          # change the following code line to geom_text instead of geom_label
-  geom_label(mapping=aes(x=mean(benchmark), 
-            y= max(density(df$total_hh_income)$y),
-            label=paste((percent(sum(below_benchmark)/nrow(df))), 
-                        "below the benchmark")),
-            # To bump the text box slightly to the right of the benchmark line,
-            # un-comment the below line. 
-            #position = position_nudge(x = mean(df$benchmark)*0.07),
-            vjust=1, hjust=0) +
-
-  # Add graph and axis labels
-  labs(x = paste("Estimated Total Household Income (", 
-                 currency, "/", "year/household)", 
-                 sep = ""),
-       y = "Income Likelihood",
-  # Add caption with observation numbers for each household type      
-       caption = paste("N =", nrow(df))) +
-  
-  # Format x-axis labels as numbers with commas
-  # If your data has extreme income outliers, 
-    # you may need to filter them or add x-axis limits so they do not warp the graph 
-  scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
-  scale_y_continuous(labels = percent) +
-  
-  ## Graph formatting 
-  theme(
-  # Remove y-axis labels and ticks
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-  # Remove background grid (the grid is the default)
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-  # Add thin x-axis line
-        axis.line.x = element_line(size = 0.25),
-  # Make graph background white
-        panel.background = element_rect(fill = "white", colour = NA),
-  # Move caption to desired location
-        plot.caption = element_text(hjust = 0),
-  
-  ## Legend formatting
-  # Move the legend to the bottom of the graph
-        legend.position="bottom",
-  # Remove legend title
-        legend.title = element_blank(),
-  # Remove gray background for legend symbols 
-        legend.key=element_rect(fill=NA),
-  # Put a box around the legend
-        legend.box.background = element_rect()) +
-  # Manually add legend 
-  scale_color_manual(values = c("Living Income Benchmark"= "red",
-                                "Income Mean"= "blue",
-                                "Income Median"="green"))
-```
-
-\newpage
-
 # Share of those below the Living Income Benchmark - Area graph 
 
 ## By household type
@@ -1557,176 +1387,6 @@ df %>%
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
   # Add thin axis lines
         axis.line = element_line(size = 0.25),
-  # Make graph background white
-        panel.background = element_rect(fill = "white", colour = NA),
-  # Move caption to desired location
-        plot.caption = element_text(hjust = 0),
-  
-  ## Legend formatting
-  # Move the legend to the bottom of the graph
-        legend.position="bottom",
-  # Remove legend title
-        legend.title = element_blank(),
-  # Remove gray background for legend symbols 
-        legend.key=element_rect(fill=NA),
-  # Put a box around the legend
-        legend.box.background = element_rect()) +
-  # Manually add legend 
-  scale_color_manual(values = c("Living Income Benchmark"= "red",
-                                "Income Mean"= "blue",
-                                "Income Median"="green"))
-```
-
-\newpage
-
-# Density plots with value of food produced at home
-
-## By household type
-
-```{r}
-##### These first few lines of code draft a dataframe of the percent below the 
-  # LI benchmark for each group. This dataframe is used in the graph code 
-  # to add the LI used as descriptive comments within the following graph
-below <-
-  df %>%
-  group_by(grouping) %>%
-  summarise(benchmark = mean(benchmark),
-            Percent = percent(sum(total_hh_income_including_food_value < benchmark)/n()))
-
-# Formatting the strings as phrases with punctuation
-below$label <- paste("Living Income ", below$grouping, ": ",
-               below$Percent, " below", sep = "")
-
-# Create a blank variable to allow for manual legend mapping of the summary curve
-df$filler <- "filler"
-
-##### Graph code begins here  
-ggplot(df) +
-  # Set x-axis to total household income and color by household type  
-    geom_density(aes(x = total_hh_income_including_food_value, color = grouping, fill = grouping), 
-                 alpha = 0.7) +
-    
-  # Add summary line for all household types
-    geom_density(aes(x = total_hh_income_including_food_value, alpha = filler), color = color_all) +
-    scale_alpha_manual(name = "Legend", values = 1, labels = "All") +
-    
-  # Add custom colors
-    scale_fill_manual(name = "Legend",
-                      values = c(color_1, color_2, color_3, color_4),
-                      breaks = c(levels(df$grouping)),
-                      labels = c(levels(df$grouping))) +
-    scale_color_manual(name = "Legend",
-                      values = c(color_1, color_2, color_3, color_4),
-                      breaks = c(levels(df$grouping)),
-                      labels = c(levels(df$grouping))) +
-    
-  # Add graph and axis labels
-    labs(x = paste("Estimated Total Household Income (", 
-                   currency, "/year/household)", sep = ""),
-         y = "Income Likelihood",
-  # Add caption with observation numbers for each household type               
-         caption = paste("Based on: \n", 
-                     paste(names(table(df$grouping)), 
-                         ":", 
-                         as.numeric(table(df$grouping)), 
-                         "observations \n ", collapse = ''), collapse = '')) +
-  # Format x-axis labels as numbers with commas
-  # If your data has extreme income outliers, 
-      # you may need to filter them or add x-axis limits so they do not warp the graph 
-    scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
-    
-  ## Graph formatting  
-    theme(
-  # Remove y-axis labels and ticks    
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(), 
-  # Remove background grid (the grid is the default)
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-  # Make graph background white
-        panel.background = element_rect(fill = "white", colour = NA), 
-  # Add thin x-axis line
-        axis.line.x = element_line(size = 0.25),
-  # Move caption to desired location
-        plot.caption = element_text(hjust = 0),
-  
-  ## Legend formatting
-  # Move the legend to the bottom of the graph
-        legend.position="bottom",
-  # Remove legend title
-        legend.title = element_blank(),
-  # Put a box around the legend
-        legend.box.background = element_rect()) + 
-  # Assign legend line color to white. This ensures the fill boxes do not 
-      # take on the color of the summary distribution line 
-    guides(fill = guide_legend(override.aes = list(color = "white"))) +
-  
-  # Add vertical lines for benchmarks by group    
-    geom_vline(data = below,
-      aes(xintercept = benchmark, color = grouping),
-      show.legend = FALSE, key_glyph = "path") +
-  
-  # Add labels with percent below benchmark for each group  
-    geom_label_repel(data = below, 
-       aes(x = benchmark, y = max(density(df$total_hh_income_including_food_value)$y),
-           color = grouping, label = label),
-           direction = "y", show.legend = FALSE, segment.alpha = 0, 
-           vjust=1, hjust=0)
-
-```
-\newpage
-
-## With mean and median
-```{r,}
-df %>%
-  # Set x-axis to key variable
-  ggplot(aes(x = total_hh_income_including_food_value, y =(..count..)/n), fill = dataset) +
-  # Add density line. You can change the fill and line colors.
-  geom_density(color = "#add8e6", fill = "#add8e6") +
-  
-  # Add vertical line for living income
-  geom_vline(aes(xintercept = mean(benchmark), 
-                 color = "Living Income Benchmark"), key_glyph = "path") +
-  # Add vertical line for mean income 
-  geom_vline(aes(xintercept = mean(df$total_hh_income_including_food_value), 
-                 color = "Income Mean"), key_glyph = "path") +
-  # Add vertical line for median income
-  geom_vline(aes(xintercept = median(df$total_hh_income_including_food_value), 
-                 color = "Income Median"), key_glyph = "path") +
-  
-  # Add text for percentage below the benchmark
-  # Label positioned to the upper right of the benchmark line 
-    # Note: to have just the text without the background box, 
-          # change the following code line to geom_text instead of geom_label
-  geom_label(mapping=aes(x=mean(benchmark), 
-            y= max(density(df$total_hh_income_including_food_value)$y),
-            label=paste((percent(sum(below_benchmark_with_food)/nrow(df))), 
-                        "below the benchmark")),
-            # To bump the text box slightly to the right of the benchmark line,
-            # un-comment the below line. 
-            #position = position_nudge(x = mean(df$benchmark)*0.07),
-            vjust=1, hjust=0) +
-
-  # Add graph and axis labels
-  labs(x = paste("Estimated Total Household Income (", 
-                 currency, "/", "year/household)", 
-                 sep = ""),
-       y = "Income Likelihood",
-  # Add caption with observation numbers for each household type      
-       caption = paste("N =", nrow(df))) +
-  
-  # Format x-axis labels as numbers with commas
-  # If your data has extreme income outliers, 
-    # you may need to filter them or add x-axis limits so they do not warp the graph 
-  scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
-  scale_y_continuous(labels = percent) +
-  
-  ## Graph formatting 
-  theme(
-  # Remove y-axis labels and ticks
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-  # Remove background grid (the grid is the default)
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-  # Add thin x-axis line
-        axis.line.x = element_line(size = 0.25),
   # Make graph background white
         panel.background = element_rect(fill = "white", colour = NA),
   # Move caption to desired location
