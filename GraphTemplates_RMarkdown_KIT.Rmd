@@ -11,30 +11,20 @@ urlcolor: blue
 ---
 
 ```{r, echo=FALSE, fig.align='center'}
-
 # Add Sustainable Food Lab logo
+
+# If you did not pull the full project repository from GitHub, the food lab logo will not be in your working directory and this code chunk will not work.   
+# If this is the case, do not run this chunk and/or delete it from your R markdown
+
 library(knitr)
 include_graphics("food-lab-logo-85px.png")
-
- # Add hook so there is a space after each code chunk before each graphic
- if(is_latex_output()) {
-   plot_default <- knit_hooks$get("plot")
-   knit_hooks$set(plot = function(x, options) {
-     x <- c("\\vspace{25pt}", plot_default(x, options))
-   })
- }
-```
-
-```{r,echo=FALSE}
-# This code chunk removes the printing of messages and warnings on the knit PDF file. Remove the following code chunk if you would like to view all R-generated messages and warnings. 
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 \newpage
 
 # Document introduction
 
-* The Sustainable Food Lab created this document to support companies and research organizations who are visualizing income data and its relationship to established Living Income Benchmarks. This document supplements tools developed by KIT to generate these graphics in [Stata and Excel](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn).     
+* The Sustainable Food Lab created this R toolkit to support companies and research organizations who are visualizing income data and its relationship to established Living Income Benchmarks. This document supplements tools developed by KIT to generate these graphics in [Stata and Excel](https://drive.google.com/drive/folders/10f3vP7j2WFgNKm1t1s4PrwzpSwCHSlzn).     
 
 * The advantages of data cleaning, management, and visualization in R programming language are countless and include: free open source use, reproducibility and documentation of data cleaning, seamless integration with GitHub (a software/platform to track, store, and collaborate on code scripts), and flexible functions. 
 
@@ -46,7 +36,10 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 # Instructions for use
 
-* Before knitting the R markdown into a PDF, there are two **necessary** actions for the user. First, load R libraries under "Load R libraries" code chunk. Second, enter data under "User-entered data" code chunk.
+There are **two ways** to use this R toolkit. 
+* Option #1: Knit the entire R markdown file, stored in the project's [Github repository](https://github.com/mollyleavens/R_Income_Graph_Templates), into a single PDF. Before knitting the R markdown into a PDF, the user must take three **necessary** actions. First, ensure your data file is in your working directory (i.e., in the same folder on your computer and/or Github repository as where you have saved the R markdown). Second, ensure you have installed all R libraries under "Load R libraries" code chunk below. Third, enter data under "User-entered data" code chunk below.
+
+* Option #2: Run each code chunk independently directly in the R markdown or by copying each chunk into a separate R file. Before running any of the graph-specific code chunks, run each set-up code chunk that is commented as necessary in the first line of the code chunk. 
 
 # Troubleshooting
 If you are encountering challenges and/or errors when running this code, try these five initial troubleshooting: 
@@ -79,9 +72,25 @@ library(scales)
 library(ggrepel)
 ```
 
+```{r, echo=FALSE, fig.align='center'}
+# Add hook so there is a space after each code chunk before each graphic
+# This chunk is purely for aesthetic purposes on the knit PDF  
+ if(is_latex_output()) {
+   plot_default <- knit_hooks$get("plot")
+   knit_hooks$set(plot = function(x, options) {
+     x <- c("\\vspace{25pt}", plot_default(x, options))
+   })
+ }
+```
+
+```{r,echo=FALSE}
+# This code chunk removes the printing of messages and warnings on the knit PDF file. Remove the following code chunk if you would like to view all R-generated messages and warnings. 
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
 # User-entered data
 
-This section allows the user to enter the information specific to their data set. The user should replace all the wording in ALL CAPS in the following code chunk.   
+This section allows the user to enter the information specific to their data set. The user should replace all the wording in ALL CAPS in the following code chunk.  
 
 **For the graph code to function, it is imperative that you write the variable names below exactly as they appear in your data's CSV file.**
 
