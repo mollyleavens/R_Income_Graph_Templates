@@ -36,10 +36,11 @@ include_graphics("food-lab-logo-85px.png")
 
 # Instructions for use
 
-There are **two ways** to use this R toolkit. 
-* Option #1: Knit the entire R markdown file, stored in the project's [Github repository](https://github.com/mollyleavens/R_Income_Graph_Templates), into a single PDF. Before knitting the R markdown into a PDF, the user must take three **necessary** actions. First, ensure your data file is in your working directory (i.e., in the same folder on your computer and/or Github repository as where you have saved the R markdown). Second, ensure you have installed all R libraries under "Load R libraries" code chunk below. Third, enter data under "User-entered data" code chunk below.
+There are **two ways** to use this R toolkit.
 
-* Option #2: Run each code chunk independently directly in the R markdown or by copying each chunk into a separate R file. Before running any of the graph-specific code chunks, run each set-up code chunk that is commented as necessary in the first line of the code chunk. 
+* Option #1: Knit the entire R markdown file, stored in the project's [publically available Github repository](https://github.com/mollyleavens/R_Income_Graph_Templates), into a single PDF. Before knitting the R markdown into a PDF, the user must take three **necessary** actions. First, ensure your CSV data file is in your working directory (i.e., in the same folder on your computer and/or Github repository as where you have saved the R markdown). Second, ensure you have installed all R libraries under "Load R libraries" code chunk below. Third, enter data under "User-entered data" code chunk below.
+
+* Option #2: Run each code chunk independently directly in the R markdown or by copying each chunk, from the PDF or markdown, into a separate R file. Before running any of the graph-specific code chunks, run each set-up code chunk that is commented as necessary in the first line of the code chunk (there are four necessary set-up code chunks). 
 
 # Troubleshooting
 If you are encountering challenges and/or errors when running this code, try these five initial troubleshooting: 
@@ -62,7 +63,8 @@ If you have further questions about this document, please reach out to the Livin
 
 Before continuing any further, load the R libraries that house the necessary functions for this analysis. If you have not previously used these R libraries, you will need to instaLl them. See instructions in below code chunk.  
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, message = FALSE}
+######## NECESSARY ########
 # To instaLl libraries, run the function: install.packages("LIBRARY NAME")
 # Example: install.packages("tidyverse")
 library(tidyverse)
@@ -99,6 +101,8 @@ When replacing the capitalized sections, retain the quotation marks. In other wo
 For an example of how to fill in the following code chunk, see the following code chunk for the example data set. 
 
 ```{r,eval=FALSE, include=TRUE}
+######## NECESSARY ########
+
 ####################### Import data set #######################
 
 # If you have troubles with the import, 
@@ -188,6 +192,8 @@ The following code chunk calculates new summary variables from columns that alre
 
 Note: These summary values are already calculated in the uploaded example data set. 
 ```{r}
+######## NECESSARY ########
+
 # Create total income variable that includes value of food produced
 df$total_hh_income_including_food_value <- df$total_hh_income + df$food_value
 
@@ -220,6 +226,8 @@ The following three code chunks allow the user to define graph colors, fonts and
 If you would like to leave the graph colors as they are in the example graphs, simply run the following code chunk without making any alterations. Note: As the code chunk for each graph template references the color names assigned in the below color code chunk, **the graph code will result in an error if you do not run the color chunk first**. You only need to run the color chunk once per session as R will save the assigned colors in the working environment.   
 
 ```{r}
+######## NECESSARY ########
+
 # You can communicate colors with R in two ways: through one of the 657 color 
 # names build into R, or through a hex color code. 
 
@@ -307,7 +315,6 @@ font <- "PASTE THE NAME OF DESIRED FONT HERE" # e.g.: "CourierNewPSMT"
 theme_set(theme_get() + theme(text = element_text(family = font)))
 
 # When running your graph code, if you get the following error: "polygon edge not found"
-
 
 ```
 
