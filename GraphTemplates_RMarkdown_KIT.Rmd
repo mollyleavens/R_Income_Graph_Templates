@@ -392,7 +392,7 @@ graph %>%
                     breaks=c("Gap", "Other", "main_crop"),
                     labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
-                                c("Income from", main_crop))) +
+                                paste("Income from", main_crop))) +
 # Format y-axis labels with a comma  
   scale_y_continuous(labels = comma) +
 # Remove x-axis grid lines and tick marks  
@@ -461,7 +461,7 @@ graph %>%
                                 "main_crop"),
                       labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
-                                "Income from main crop")) +
+                                paste("Income from", main_crop))) +
 # Format y-axis labels with a comma  
   scale_y_continuous(labels = percent) +
 # Remove x-axis grid lines and tick marks  
@@ -528,7 +528,7 @@ graph %>%
                     breaks=c("Gap", "Other", "main_crop"),
                     labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
-                                "Income from main crop")) +
+                                paste("Income from", main_crop))) +
 # Format y-axis labels with a comma  
   scale_y_continuous(labels = comma) +
 # Remove x-axis grid lines and tick marks  
@@ -596,7 +596,7 @@ graph %>%
                     breaks=c("Gap", "Other", "main_crop"),
                     labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
-                                "Income from main crop")) +
+                                paste("Income from", main_crop))) +
 # Format y-axis labels with a comma  
   scale_y_continuous(labels = percent) +
 # Remove x-axis grid lines and tick marks  
@@ -706,7 +706,7 @@ graph %>%
                     labels=c("Gap to the Living Income Benchmark",
                              "Value of crops consumed at home",
                                 "Other income",
-                                "Income from main crop")) +
+                                paste("Income from", main_crop))) +
 # Format y-axis labels with a comma  
   scale_y_continuous(labels = comma) +
 # Wrap legend onto 2 lines to fit everything neatly     
@@ -780,7 +780,7 @@ graph %>%
                       labels=c("Gap to the Living Income Benchmark",
                                "Value of crops consumed at home",
                                 "Other income",
-                                "Income from main crop")) +
+                                paste("Income from", main_crop))) +
 # Format y-axis labels with a comma  
   scale_y_continuous(labels = percent) +
 # Wrap legend onto 2 lines to fit everything neatly     
@@ -850,7 +850,7 @@ graph %>%
                     labels=c("Gap to the Living Income Benchmark",
                              "Value of crops consumed at home",
                               "Other income",
-                              "Income from main crop")) +
+                              paste("Income from", main_crop))) +
 # Wrap legend onto 2 lines to fit everything neatly     
   guides(fill = guide_legend(nrow = 2)) +
 # Format y-axis labels with a comma  
@@ -921,7 +921,7 @@ graph %>%
                     labels=c("Gap to the Living Income Benchmark",
                              "Value of crops consumed at home",
                               "Other income",
-                              "Income from main crop")) +
+                              paste("Income from", main_crop))) +
 # Wrap legend onto 2 lines to fit everything neatly     
   guides(fill = guide_legend(nrow = 2)) +
 # Format y-axis labels with a comma and assign limits 0-100% 
