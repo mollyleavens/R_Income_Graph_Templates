@@ -61,7 +61,7 @@ If you have further questions about this document, please reach out to the Livin
 
 # Load R libraries
 
-Before continuing any further, load the R libraries that house the necessary functions for this analysis. If you have not previously used these R libraries, you will need to instaLl them. See instructions in below code chunk.  
+Before continuing any further, load the R libraries that house the necessary functions for this analysis. If you have not previously used these R libraries, you will need to install them. See instructions in subsequent code chunk.  
 
 ```{r, echo=TRUE, message = FALSE}
 ######## NECESSARY ########
@@ -161,10 +161,12 @@ df$food_value <- df$"VARIABLE NAME"
 df$grouping <- df$"VARIABLE NAME"
 
 ## Living income benchmark
+df$benchmark <- df$"VARIABLE NAME" 
+
   # Note: if your data set does not already have a benchmark column AND 
   # the benchmark is the name value for all farmers, you can assign a number 
-  # to the column and all farmers will receive that number
-df$benchmark <- df$"VARIABLE NAME" -or- BENCHMARK NUMBER (e.g 2000)
+  # to the column and all farmers will receive that number. 
+  # Example: df$benchmark <- 2000
 
 ####################### Replace graph labels #######################
 main_crop <- "NAME OF MAIN CROP" # e.g: "cocoa" 
@@ -291,6 +293,10 @@ benchmark_color <- "red"
 font_color <- "black"
 theme_set(theme_get() + theme(text = element_text(color = font_color)))
 
+# This last line of code does not relate to color. The line is in this code chunk to ensure
+# it gets run and the default size gets assigned.
+# See section "Bar chart label size" for more info.
+bar_label_size <- 3
 ```
 
 ## Fonts
@@ -327,10 +333,9 @@ theme_set(theme_get() + theme(text = element_text(family = font)))
 # When running your graph code, if you get the following error: "polygon edge not found"
 ```
 
-## Bar Placement (variable releveling)
+## Bar placement (variable releveling)
 
 The below code chunk is **optional**. It allows you to define the order in which the groups - gender, household size, or other grouping variable - appear from left to right on the bar graphs.   
-
 ```{r}
 # In the example data set, there are three groups that income is assessed across:
   # Male-headed, typical; Male-headed, large; and Female-headed.
@@ -348,6 +353,14 @@ df <- df %>%
                                        "Male-headed, large", 
                                        "Female-headed")))
 ```
+
+## Bar chart label size
+
+The size of the labels that identify the bar chart segments is currently set to 3. This is a relative measurement of size within R. If you would like larger labels, try increasing the size to between 4-8. If you would like smaller labels, try decreasing the size to 2. To change the size, simply replace the 3 in the subsequent line of code with another number. Then, re-run the subsequent line of code with the new number and re-load your graphs.  
+```{r}
+bar_label_size <- 3
+```
+
 
 \newpage
 
@@ -409,10 +422,10 @@ graph %>%
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
-# Add incomes to prospective graph components  
+# Add incomes to respective graph components  
   geom_text(aes(label = round(Income)), 
             position = position_stack(vjust = 0.5), 
-            size = 3) 
+            size = bar_label_size) 
 ```
 
 \newpage
@@ -478,7 +491,7 @@ graph %>%
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
-# Add incomes to prospective graph components  
+# Add incomes to respective graph components
   geom_text(aes(label = label_percent(accuracy = 1L)(Income)), 
             position = position_stack(vjust = 0.5), 
             size = 3) 
@@ -545,7 +558,7 @@ graph %>%
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
-# Add incomes to prospective graph components  
+# Add incomes to respective graph components  
   geom_text(aes(label = round(Income)), 
             position = position_stack(vjust = 0.5), 
             size = 3) 
@@ -613,7 +626,7 @@ graph %>%
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
-# Add incomes to prospective graph components  
+# Add incomes to respective graph components  
   geom_text(aes(label = label_percent(accuracy = 1L)(Income)), 
             position = position_stack(vjust = 0.5), 
             size = 3) 
@@ -725,7 +738,7 @@ graph %>%
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
-# Add incomes to prospective graph components  
+# Add incomes to respective graph components  
   geom_text(aes(label = round(Income)), 
             position = position_stack(vjust = 0.5), 
             size = 3) 
@@ -799,7 +812,7 @@ graph %>%
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
-# Add incomes to prospective graph components  
+# Add incomes to respective graph components  
   geom_text(aes(label = label_percent(accuracy = 1L)(Income)), 
             position = position_stack(vjust = 0.5), 
             size = 3) 
@@ -869,7 +882,7 @@ graph %>%
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
-# Add incomes to prospective graph components  
+# Add incomes to respective graph components  
   geom_text(aes(label = round(Income)), 
             position = position_stack(vjust = 0.5), 
             size = 3) 
@@ -940,7 +953,7 @@ graph %>%
         legend.box.background = element_rect(),
 # Move caption to desired location
         plot.caption = element_text(hjust = 0)) +
-# Add incomes to prospective graph components  
+# Add incomes to respective graph components  
   geom_text(aes(label = label_percent(accuracy = 1L)(Income)), 
             position = position_stack(vjust = 0.5), 
             size = 3) 
