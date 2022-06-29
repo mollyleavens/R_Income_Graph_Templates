@@ -92,7 +92,17 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 # User-entered data
 
-This section allows the user to enter the information specific to their data set. The user should replace all the wording in ALL CAPS in the following code chunk.  
+The following variables are required to execute the analysis. For each farmer, the data set must contain a value for the: 
+
+* Income from the main crop [income_main_crop]. This value captures the net-income or profit from the main crop. Costs are already deducted from the revenues.
+* Total household income [total_hh_income] and/or total 'other income', from which you can calculate total farm income by summing it with the income from main crop and the value of food produced at home.
+* Value of food produced at home [food_value]
+* Independent variables that you want to use for disaggregating results [grouping]
+* Living income benchmark value(s) [benchmark]
+
+This toolkit assumes your data file already has calculated values for these variables. Replace the variable names of your dataset with the variable names listed between brackets above. The script below can help you with doing this.
+
+The subsequent code chunk allows the user to enter the information specific to their data set. The user should replace all the wording in ALL CAPS in the following code chunk.  
 
 **For the graph code to function, it is imperative that you write the variable names below exactly as they appear in your data's CSV file.**
 
@@ -307,15 +317,14 @@ font_import()
 fonttable()
 
 # Step 4: Select your desired font
-# Ensure you paste the 'FontName' as listed in the front table printed in step 3
+# Ensure you paste the 'FontName' exactly as listed in the front table printed in Step 3
   # There should not be any spaces in the same pasted below
 font <- "PASTE THE NAME OF DESIRED FONT HERE" # e.g.: "CourierNewPSMT"
 
-# Step 5: Set default to your selected font.
+# Step 5: Set default to your selected font. Run the subsequent line.
 theme_set(theme_get() + theme(text = element_text(family = font)))
 
 # When running your graph code, if you get the following error: "polygon edge not found"
-
 ```
 
 ## Bar Placement (variable releveling)
@@ -383,7 +392,7 @@ graph %>%
                     breaks=c("Gap", "Other", "main_crop"),
                     labels=c("Gap to the Living Income Benchmark",
                                 "Other income",
-                                "Income from main crop")) +
+                                c("Income from", main_crop))) +
 # Format y-axis labels with a comma  
   scale_y_continuous(labels = comma) +
 # Remove x-axis grid lines and tick marks  
