@@ -1085,6 +1085,84 @@ df %>%
 
 # Share of those below the Living Income Benchmark - Area graph 
 
+## With mean and median
+```{r,}
+df %>%
+  # Set x-axis to key variable
+  ggplot(aes(x = total_hh_income)) +
+  # Add density line. You can change the fill and line colors.
+  geom_area(color = "#add8e6", fill = "#add8e6", stat = "bin", binwidth = 500) +
+  
+  # Add vertical line for living income
+  geom_vline(aes(xintercept = mean(benchmark), 
+                 color = "Living Income Benchmark"), key_glyph = "path") +
+  # Add vertical line for mean income 
+  geom_vline(aes(xintercept = mean(df$total_hh_income), 
+                 color = "Income Mean"), key_glyph = "path") +
+  # Add vertical line for median income
+  geom_vline(aes(xintercept = median(df$total_hh_income), 
+                 color = "Income Median"), key_glyph = "path") +
+  
+  # Add text for percentage below the benchmark
+  # Label positioned to the upper right of the benchmark line 
+    # Note: to have just the text without the background box, 
+          # change the following code line to geom_text instead of geom_label
+  geom_label(mapping=aes(x=mean(benchmark), 
+          # Long way of calculating graph maximum               
+            y= max(table(cut(df$total_hh_income,
+                             seq(min(df$total_hh_income),
+                                 max(df$total_hh_income),
+                                 dist(range(df$total_hh_income))/
+                                   (max(df$total_hh_income)/500))))),
+            label=paste((percent(sum(below_benchmark)/nrow(df))), 
+                        "of the households earn an \n income below the benchmark")),
+            # To bump the text box slightly to the right of the benchmark line,
+            # un-comment the below line. 
+            #position = position_nudge(x = mean(df$benchmark)*0.07),
+            vjust=1, hjust=0) +
+
+  # Add graph and axis labels
+  labs(x = paste("Estimated Total Household Income (", 
+                 currency, "/", "year/household)", 
+                 sep = ""),
+       y = "Number of Households",
+  # Add caption with observation numbers for each household type      
+       caption = paste("N =", nrow(df))) +
+  
+  # Format x-axis labels as numbers with commas
+  # If your data has extreme income outliers, 
+    # you may need to filter them or add x-axis limits so they do not warp the graph 
+  scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
+  scale_y_continuous(labels = comma) +
+  
+  ## Graph formatting 
+  theme(
+  # Remove background grid (the grid is the default)
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  # Add thin axis lines
+        axis.line = element_line(size = 0.25),
+  # Make graph background white
+        panel.background = element_rect(fill = "white", colour = NA),
+  # Move caption to desired location
+        plot.caption = element_text(hjust = 0),
+  
+  ## Legend formatting
+  # Move the legend to the bottom of the graph
+        legend.position="bottom",
+  # Remove legend title
+        legend.title = element_blank(),
+  # Remove gray background for legend symbols 
+        legend.key=element_rect(fill=NA),
+  # Put a box around the legend
+        legend.box.background = element_rect()) +
+  # Manually add legend 
+  scale_color_manual(values = c("Living Income Benchmark"= "red",
+                                "Income Mean"= "blue",
+                                "Income Median"="green"))
+```
+
+\newpage
+
 ## By household type
 
 ```{r}
@@ -1098,8 +1176,11 @@ below <-
              Percent = percent(sum(total_hh_income < benchmark)/n()))
 
   # Formatting the strings as phrases with punctuation
- below$label <- paste("Living Income ", below$grouping, ": ",
-                below$Percent, " below", sep = "")
+      # The \n pastes the grouping on a new line in the graph label. 
+      # You can remove the \n from the below code if you would like the label as 
+      # one continuous line. However, this could affect the labels' x-axis 
+      # orientation if the long label does not fit on the graph. 
+ below$label <- paste(below$Percent, " below the Living Income Benchmark: \n", below$grouping, sep = "")
 
   # Create a blank variable to allow for manual legend mapping of the summary curve
  df$filler <- "filler"
@@ -1189,13 +1270,15 @@ ggplot(df) +
 
 \newpage
 
+# Share of those below the Living Income Benchmark - Histogram 
+
 ## With mean and median
 ```{r,}
 df %>%
   # Set x-axis to key variable
   ggplot(aes(x = total_hh_income)) +
   # Add density line. You can change the fill and line colors.
-  geom_area(color = "#add8e6", fill = "#add8e6", stat = "bin", binwidth = 500) +
+  geom_histogram(color = "#add8e6", fill = "#add8e6", stat = "bin", binwidth = 500) +
   
   # Add vertical line for living income
   geom_vline(aes(xintercept = mean(benchmark), 
@@ -1219,7 +1302,7 @@ df %>%
                                  dist(range(df$total_hh_income))/
                                    (max(df$total_hh_income)/500))))),
             label=paste((percent(sum(below_benchmark)/nrow(df))), 
-                        "below the benchmark")),
+                        "of the households earn an \n income below the benchmark")),
             # To bump the text box slightly to the right of the benchmark line,
             # un-comment the below line. 
             #position = position_nudge(x = mean(df$benchmark)*0.07),
@@ -1265,7 +1348,7 @@ df %>%
                                 "Income Median"="green"))
 ```
 
-# Share of those below the Living Income Benchmark - Histogram 
+\newpage
 
 ## By household type
 
@@ -1280,8 +1363,11 @@ below <-
              Percent = percent(sum(total_hh_income < benchmark)/n()))
 
   # Formatting the strings as phrases with punctuation
- below$label <- paste("Living Income ", below$grouping, ": ",
-                below$Percent, " below", sep = "")
+      # The \n pastes the grouping on a new line in the graph label. 
+      # You can remove the \n from the below code if you would like the label as 
+      # one continuous line. However, this could affect the labels' x-axis 
+      # orientation if the long label does not fit on the graph. 
+below$label <- paste(below$Percent, " below the Living Income Benchmark: \n", below$grouping, sep = "")
 
   # Create a blank variable to allow for manual legend mapping of the summary curve
  df$filler <- "filler"
@@ -1365,84 +1451,6 @@ ggplot(df) +
            color = grouping, label = label),
            direction = "y", show.legend = FALSE, segment.alpha = 0, hjust=0)
 
-```
-
-\newpage
-
-## With mean and median
-```{r,}
-df %>%
-  # Set x-axis to key variable
-  ggplot(aes(x = total_hh_income)) +
-  # Add density line. You can change the fill and line colors.
-  geom_histogram(color = "#add8e6", fill = "#add8e6", stat = "bin", binwidth = 500) +
-  
-  # Add vertical line for living income
-  geom_vline(aes(xintercept = mean(benchmark), 
-                 color = "Living Income Benchmark"), key_glyph = "path") +
-  # Add vertical line for mean income 
-  geom_vline(aes(xintercept = mean(df$total_hh_income), 
-                 color = "Income Mean"), key_glyph = "path") +
-  # Add vertical line for median income
-  geom_vline(aes(xintercept = median(df$total_hh_income), 
-                 color = "Income Median"), key_glyph = "path") +
-  
-  # Add text for percentage below the benchmark
-  # Label positioned to the upper right of the benchmark line 
-    # Note: to have just the text without the background box, 
-          # change the following code line to geom_text instead of geom_label
-  geom_label(mapping=aes(x=mean(benchmark), 
-          # Long way of calculating graph maximum               
-            y= max(table(cut(df$total_hh_income,
-                             seq(min(df$total_hh_income),
-                                 max(df$total_hh_income),
-                                 dist(range(df$total_hh_income))/
-                                   (max(df$total_hh_income)/500))))),
-            label=paste((percent(sum(below_benchmark)/nrow(df))), 
-                        "below the benchmark")),
-            # To bump the text box slightly to the right of the benchmark line,
-            # un-comment the below line. 
-            #position = position_nudge(x = mean(df$benchmark)*0.07),
-            vjust=1, hjust=0) +
-
-  # Add graph and axis labels
-  labs(x = paste("Estimated Total Household Income (", 
-                 currency, "/", "year/household)", 
-                 sep = ""),
-       y = "Number of Households",
-  # Add caption with observation numbers for each household type      
-       caption = paste("N =", nrow(df))) +
-  
-  # Format x-axis labels as numbers with commas
-  # If your data has extreme income outliers, 
-    # you may need to filter them or add x-axis limits so they do not warp the graph 
-  scale_x_continuous(labels = comma, breaks=pretty_breaks(10)) +
-  scale_y_continuous(labels = comma) +
-  
-  ## Graph formatting 
-  theme(
-  # Remove background grid (the grid is the default)
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-  # Add thin axis lines
-        axis.line = element_line(size = 0.25),
-  # Make graph background white
-        panel.background = element_rect(fill = "white", colour = NA),
-  # Move caption to desired location
-        plot.caption = element_text(hjust = 0),
-  
-  ## Legend formatting
-  # Move the legend to the bottom of the graph
-        legend.position="bottom",
-  # Remove legend title
-        legend.title = element_blank(),
-  # Remove gray background for legend symbols 
-        legend.key=element_rect(fill=NA),
-  # Put a box around the legend
-        legend.box.background = element_rect()) +
-  # Manually add legend 
-  scale_color_manual(values = c("Living Income Benchmark"= "red",
-                                "Income Mean"= "blue",
-                                "Income Median"="green"))
 ```
 
 \newpage
